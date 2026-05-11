@@ -10,13 +10,12 @@ const log = getLogger('Youtube')
 const router = new KoaRouter({ prefix: '/api/youtube' })
 
 // stream a youtube karaoke.mp4 file
-router.get('/:youtubeVideoId', async (ctx, next) => {
+router.get('/:youtubeVideoId', async (ctx) => {
   if (!ctx.user.isAdmin) {
     ctx.throw(401)
   }
 
-  // get base path
-  const { tmpOutputPath } = await Prefs.get()
+  const { tmpOutputPath } = Prefs.get() as any
 
   const file = path.join(tmpOutputPath, ctx.params.youtubeVideoId, 'karaoke.mp4')
 
@@ -24,7 +23,6 @@ router.get('/:youtubeVideoId', async (ctx, next) => {
     ctx.throw(404, 'The karaoke.mp4 file could not be found')
   }
 
-  // get file info
   const stats = await stat(file)
   ctx.length = stats.size
   ctx.type = 'video/mp4'

@@ -1,24 +1,18 @@
 import { exec } from 'child_process'
+import type { Readable, Writable } from 'stream'
 
 class Shell {
-  static sleep (ms) {
+  static sleep (ms: number): Promise<void> {
     return new Promise(resolve => setTimeout(resolve, ms))
   }
 
-  /**
-   * Streams input to output and resolves only after stream has successfully ended.
-   * Closes the output stream in success and error cases.
-   * @param input {stream.Readable} Read from
-   * @param output {stream.Writable} Write to
-   * @return Promise Resolves only after the output stream is "end"ed or "finish"ed.
-   */
-  static promisifiedPipe (input, output) {
+  static promisifiedPipe (input: Readable, output: Writable): Promise<void> {
     let ended = false
     function end () {
       if (!ended) {
         ended = true
-        output.close && output.close()
-        input.close && input.close()
+        ;(output as any).close?.()
+        ;(input as any).close?.()
         return true
       }
     }
@@ -31,7 +25,7 @@ class Shell {
         if (end()) resolve()
       }
 
-      function errorEnding (error) {
+      function errorEnding (error: Error) {
         if (end()) reject(error)
       }
 
@@ -41,22 +35,16 @@ class Shell {
     })
   }
 
-  /**
-   * Executes a shell command and return it as a Promise.
-   * @param cmd {string}
-   * @return {Promise<string>}
-   */
-  static promisifiedExec (cmd) {
+  static promisifiedExec (cmd: string): Promise<string> {
     return new Promise((resolve, reject) => {
       const env = process.env
 
-      // this is probably not necessary outside of development...
       if (process.env.NODE_ENV === 'development') {
         env.LC_ALL = 'C.UTF-8'
         env.LANG = 'C.UTF-8'
       }
 
-      exec(cmd, { env:env }, (error, stdout, stderr) => {
+      exec(cmd, { env }, (error, stdout) => {
         if (error) {
           reject(error)
         }

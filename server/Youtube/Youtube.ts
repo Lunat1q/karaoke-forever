@@ -4,6 +4,9 @@ import {
 } from '../../shared/actionTypes.js'
 
 class Youtube {
+  isCanceling: boolean
+  emitStatus: (text: string, pct: number, isProcessing?: boolean) => void
+
   constructor () {
     this.isCanceling = false
     this.emitStatus = this.getStatusEmitter()
@@ -14,7 +17,7 @@ class Youtube {
   }
 
   getStatusEmitter () {
-    return (text, pct, isProcessing = true) => {
+    return (text: string, pct: number, isProcessing = true) => {
       IPC.send({
         type: YOUTUBE_WORKER_STATUS,
         payload: {

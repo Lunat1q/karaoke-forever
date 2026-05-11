@@ -13,7 +13,7 @@ const { YOUTUBE_CMD_STOP, YOUTUBE_CMD_UPDATE } = await import('../shared/actionT
 const { default: Prefs } = await import('./Prefs/Prefs.js')
 const { default: YoutubeProcessor } = await import('./Youtube/YoutubeProcessor/index.js')
 
-let _Processor
+let _Processor: InstanceType<typeof YoutubeProcessor> | null = null
 
 open({ file: path.join(env.KES_PATH_DATA, 'database.sqlite3'), ro: true })
 
@@ -33,8 +33,8 @@ startProcessing()
 async function startProcessing () {
   log.info('Starting YouTube processor')
 
-  const prefs = await Prefs.get()
-  _Processor = new YoutubeProcessor(prefs)
+  const prefs = Prefs.get()
+  _Processor = new YoutubeProcessor(prefs as any)
   await _Processor.process()
 
   process.exit()
@@ -44,8 +44,8 @@ async function update () {
   log.info('Updating YouTube processor')
 
   if (_Processor) {
-    const prefs = await Prefs.get()
-    _Processor.setPrefs(prefs)
+    const prefs = Prefs.get()
+    _Processor.setPrefs(prefs as any)
   } else {
     startProcessing()
   }
