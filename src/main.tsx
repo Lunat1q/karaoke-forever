@@ -4,8 +4,9 @@ import { RouterProvider } from 'react-router'
 import store from './store/store'
 import socket from 'lib/socket'
 import AppRouter from 'lib/AppRouter'
-import { connectSocket } from './store/modules/user'
+import { connectSocket, switchRoom } from './store/modules/user'
 import Persistor from 'store/Persistor'
+import { ROOM_SWITCH_PUSH } from 'shared/actionTypes'
 
 Persistor.init(store, () => {
   // rehydration complete; open socket connection
@@ -18,6 +19,13 @@ Persistor.init(store, () => {
 
 socket.on('reconnect_attempt', () => {
   store.dispatch(connectSocket())
+})
+
+// handle admin-initiated room switch
+socket.on('action', (action: any) => {
+  if (action.type === ROOM_SWITCH_PUSH && action.payload?.roomId) {
+    store.dispatch(switchRoom({ roomId: action.payload.roomId }))
+  }
 })
 
 // toast functionality

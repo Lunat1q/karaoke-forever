@@ -54,6 +54,25 @@ export const login = createAsyncThunk(
 )
 
 // ------------------------------------
+// Switch room (re-issues JWT, reconnects socket)
+// ------------------------------------
+export const switchRoom = createAsyncThunk(
+  'user/SWITCH_ROOM',
+  async (payload: { roomId: number, roomPassword?: string }, thunkAPI) => {
+    const user = await api.put('user/room', {
+      body: payload,
+    })
+
+    thunkAPI.dispatch(receiveAccount(user))
+
+    // reconnect socket with new room context
+    socket.close()
+    thunkAPI.dispatch(connectSocket())
+    socket.open()
+  },
+)
+
+// ------------------------------------
 // Logout
 // ------------------------------------
 const logout = createAction(LOGOUT)

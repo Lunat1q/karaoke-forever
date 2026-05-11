@@ -92,6 +92,10 @@ export const USERS_FILTER_ROOM_ID = 'users/FILTER_ROOM_ID'
 export const USERS_REMOVE = 'users/REMOVE'
 export const USERS_REQUEST = 'users/REQUEST'
 export const USERS_UPDATE = 'users/UPDATE'
+export const USERS_MOVE_TO_ROOM = 'users/MOVE_TO_ROOM'
+
+// Push from server to force a client to switch rooms
+export const ROOM_SWITCH_PUSH = 'user/ROOM_SWITCH_PUSH'
 
 // UI
 export const HEADER_HEIGHT_CHANGE = 'ui/HEADER_HEIGHT_CHANGE'

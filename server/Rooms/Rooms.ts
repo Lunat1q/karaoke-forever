@@ -137,7 +137,7 @@ class Rooms {
       role?: any
     } = {},
   ): Promise<boolean> {
-    const res = Rooms.get(roomId, { includePassword: true })
+    const res = Rooms.get(roomId, { includePassword: true, status: [] })
     const room = res.entities[roomId]
 
     if (!room) {

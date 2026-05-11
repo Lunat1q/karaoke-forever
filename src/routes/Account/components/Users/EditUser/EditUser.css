@@ -12,3 +12,16 @@
 .field {
   margin-bottom: var(--input-margin);
 }
+
+.roomAssign {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-s);
+  margin-top: var(--space-m);
+  padding-top: var(--space-m);
+  border-top: 1px solid var(--border-color, rgba(255, 255, 255, 0.1));
+
+  label {
+    font-weight: bold;
+  }
+}

@@ -1,11 +1,14 @@
-import React from 'react'
-import { useAppDispatch } from 'store/hooks'
+import React, { useState } from 'react'
+import { useAppDispatch, useAppSelector } from 'store/hooks'
 import { createUser, removeUser, updateUser } from '../../../modules/users'
 import Button from 'components/Button/Button'
 import Modal from 'components/Modal/Modal'
 import AccountForm from '../../AccountForm/AccountForm'
 import { UserWithRole } from 'shared/types'
+import HttpApi from 'lib/HttpApi'
 import styles from './EditUser.css'
+
+const api = new HttpApi('')
 
 interface EditUserProps {
   user?: UserWithRole
@@ -14,6 +17,8 @@ interface EditUserProps {
 
 const EditUser = ({ user, onClose }: EditUserProps) => {
   const dispatch = useAppDispatch()
+  const rooms = useAppSelector(state => state.rooms)
+  const [moveRoomId, setMoveRoomId] = useState<number | null>(null)
 
   const handleSubmit = (data: FormData) => {
     if (user) dispatch(updateUser({ userId: user.userId, data }))
@@ -23,6 +28,19 @@ const EditUser = ({ user, onClose }: EditUserProps) => {
   const handleRemoveClick = () => {
     if (user && confirm(`Remove user "${user.username}"?\n\nTheir queued songs will also be removed.`)) {
       dispatch(removeUser(user.userId))
+    }
+  }
+
+  const handleMoveToRoom = async () => {
+    if (!user || !moveRoomId) return
+    try {
+      await api.put(`user/${user.userId}/room`, {
+        body: { roomId: moveRoomId },
+      })
+      alert(`Moved ${user.username} to room "${rooms.entities[moveRoomId]?.name}"`)
+      setMoveRoomId(null)
+    } catch (err: any) {
+      alert(`Failed: ${err.message}`)
     }
   }
 
@@ -57,6 +75,26 @@ const EditUser = ({ user, onClose }: EditUserProps) => {
           </Button>
         </div>
       </AccountForm>
+
+      {user && rooms.result.length > 0 && (
+        <div className={styles.roomAssign}>
+          <label>Move to Room</label>
+          <select
+            value={moveRoomId ?? ''}
+            onChange={(e) => setMoveRoomId(parseInt(e.target.value, 10) || null)}
+          >
+            <option value=''>Select a room...</option>
+            {rooms.result.map(id => (
+              <option key={id} value={id}>{rooms.entities[id].name}</option>
+            ))}
+          </select>
+          {moveRoomId && (
+            <Button onClick={handleMoveToRoom} variant='primary'>
+              Move User
+            </Button>
+          )}
+        </div>
+      )}
     </Modal>
   )
 }

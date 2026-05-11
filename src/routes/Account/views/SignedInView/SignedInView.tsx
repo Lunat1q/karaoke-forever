@@ -2,6 +2,7 @@ import React, { useEffect } from 'react'
 import combinedReducer from 'store/reducers'
 import { useAppDispatch, useAppSelector } from 'store/hooks'
 import { fetchAccount } from 'store/modules/user'
+import { fetchRooms } from 'store/modules/rooms'
 import usersReducer, { sliceInjectNoOp } from '../../modules/users'
 import About from '../../components/About/About'
 import Account from '../../components/Account/Account'
@@ -21,7 +22,10 @@ const SignedInView = () => {
 
   // once per mount
   useEffect(() => {
-    (async () => dispatch(fetchAccount()))()
+    (async () => {
+      dispatch(fetchAccount())
+      dispatch(fetchRooms())
+    })()
   }, [dispatch])
 
   return (

@@ -9,7 +9,7 @@ import Prefs from '../Prefs/Prefs.js'
 import Queue from '../Queue/Queue.js'
 import Rooms from '../Rooms/Rooms.js'
 import User from '../User/User.js'
-import { QUEUE_PUSH } from '../../shared/actionTypes.js'
+import { QUEUE_PUSH, ROOM_SWITCH_PUSH } from '../../shared/actionTypes.js'
 import {
   USERNAME_MIN_LENGTH,
   USERNAME_MAX_LENGTH,
@@ -99,6 +99,79 @@ router.post('/login', async (ctx) => {
 router.get('/logout', (ctx) => {
   // @todo force socket room leave
   ctx.cookies.set('keToken', '')
+  ctx.status = 200
+  ctx.body = {}
+})
+
+// switch room (re-issues JWT with new roomId)
+router.put('/user/room', async (ctx) => {
+  if (typeof ctx.user.userId !== 'number') {
+    ctx.throw(401)
+  }
+
+  const req = ctx.request as unknown as RequestWithBody
+  const roomId = parseInt(req.body.roomId, 10) || null
+
+  if (roomId) {
+    await Rooms.validate(roomId, req.body.roomPassword, {
+      isOpen: !ctx.user.isAdmin,
+      validatePassword: true,
+    })
+  } else if (!ctx.user.isAdmin) {
+    ctx.throw(401, 'Please select a room')
+  }
+
+  const user = User.getById(ctx.user.userId, true)
+  if (!user) ctx.throw(404)
+
+  const userCtx = createUserCtx(user, roomId)
+
+  // re-issue JWT with new roomId
+  const token = jwtSign(userCtx, ctx.jwtKey)
+  ctx.cookies.set('keToken', token, {
+    httpOnly: true,
+    sameSite: 'lax',
+  })
+
+  ctx.body = userCtx
+})
+
+// admin: move a user to a different room
+router.put('/user/:userId/room', async (ctx) => {
+  if (!ctx.user.isAdmin) {
+    ctx.throw(401)
+  }
+
+  const targetId = parseInt(ctx.params.userId, 10)
+  const req = ctx.request as unknown as RequestWithBody
+  const roomId = parseInt(req.body.roomId, 10) || null
+
+  if (roomId) {
+    // just validate the room exists and is valid (admin skips open/password checks)
+    await Rooms.validate(roomId, null, {
+      isOpen: false,
+      validatePassword: false,
+    })
+  }
+
+  const targetUser = User.getById(targetId, true)
+  if (!targetUser) ctx.throw(404, 'User not found')
+
+  // find all sockets for this user and send them a room switch command
+  const sockets = await ctx.io.fetchSockets()
+  const newUserCtx = createUserCtx(targetUser, roomId)
+
+  for (const s of sockets) {
+    if (s.user && s.user.userId === targetId) {
+      // re-issue JWT cookie for this user's socket
+      // The client will handle ROOM_SWITCH_PUSH by calling switchRoom()
+      ctx.io.to(s.id).emit('action', {
+        type: ROOM_SWITCH_PUSH,
+        payload: { roomId },
+      })
+    }
+  }
+
   ctx.status = 200
   ctx.body = {}
 })
