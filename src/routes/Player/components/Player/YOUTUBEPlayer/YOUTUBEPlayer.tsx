@@ -95,7 +95,7 @@ class YOUTUBEPlayerInner extends React.Component<YOUTUBEPlayerProps> {
           onTimeUpdate={this.handleTimeUpdate}
           ref={this.video}
         />
-        { this.props.youtubeAlignedLyrics !== null &&
+        { this.props.youtubeAlignedLyrics != null &&
           <>
             <div key={this.props.youtubeVideoId + '_upcomingLyricsContainer'} style={{ width, height }} className={styles.lyricsContainer}>
               <div style={{ width }} className={styles.lyricsScrollContainer}>
