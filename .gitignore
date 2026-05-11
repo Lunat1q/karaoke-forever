@@ -1,6 +1,5 @@
 build/
-coverage/
-dist/
+dockerfiles/
 docs/public/
 docs/resources/
 node_modules/
@@ -15,3 +14,6 @@ tmp/
 *.sqlite3-shm
 *.sqlite3-wal
 .env
+*.tsbuildinfo
+.hugo_build.lock
+.vscode

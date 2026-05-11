@@ -1,36 +1,17 @@
 <!DOCTYPE html>
 <html lang="en-us">
-  {{ partial "head.html" . }}
-  <body>
-    {{ partial "sidebar.html" . }}
-    <div class="content container">
-      {{ block "main" . }}{{ end }}
-    </div>
-    <script src='{{ (resources.Get "js/buttons.min.js").Permalink }}'></script>
-    <script src='{{ (resources.Get "js/gumshoe.min.js").Permalink }}'></script>
-    <script>
-      const cur = window.location.href
-        .replace(/^http(s?):\/\//i, '') // remove http(s):// from start
-        .replace(/\/(|#.*)$/i, '') // remove trailing slash and/or hash fragment
-        .replace(/\.html$/i, '') // remove .html extensions
+{{ partial "head.html" . }}
 
-      const seg = cur.lastIndexOf('/') === -1 ? 'index' : cur.substring(cur.lastIndexOf('/') + 1)
-      let btn, nav
+<body>
+  {{ partial "sidebar.html" . }}
+  <div class="content container">
+    {{ block "main" . }}
+    {{ end }}
+  </div>
+  <script src='{{ (resources.Get "js/gumshoe.min.js").Permalink }}'></script>
+  <script src='{{ (resources.Get "js/main.js").Permalink }}'></script>
+  <script src='{{ (resources.Get "js/copy-code.js").Permalink }}'></script>
+  {{ partial "footer.html" . }}
+</body>
 
-      document.addEventListener("DOMContentLoaded", function(event) {
-        btn = document.getElementById('btn-nav')
-        nav = document.getElementsByTagName('nav')[0]
-        toggleNav()
-
-        // init ToC highlighter in sidebar if we're in docs
-        if (seg === 'docs') new Gumshoe('#doc-toc a')
-      })
-
-      function toggleNav () {
-        btn.classList.toggle('active')
-        nav.classList.toggle('active')
-      }
-    </script>
-    {{ partial "footer.html" . }}
-  </body>
 </html>

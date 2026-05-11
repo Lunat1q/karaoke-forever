@@ -1,64 +1,64 @@
-const path = require('path')
-const fs = require('fs')
-const webpack = require('webpack')
-const ReactRefreshWebpackPlugin = require('@pmmmwh/react-refresh-webpack-plugin')
-const CaseSensitivePathsPlugin = require('case-sensitive-paths-webpack-plugin')
-const HtmlWebpackPlugin = require('html-webpack-plugin')
-const MiniCssExtractPlugin = require('mini-css-extract-plugin')
-const { LicenseWebpackPlugin } = require('license-webpack-plugin')
+import path from 'path'
+import webpack from 'webpack'
+import ReactRefreshWebpackPlugin from '@pmmmwh/react-refresh-webpack-plugin'
+import CaseSensitivePathsPlugin from 'case-sensitive-paths-webpack-plugin'
+import HtmlWebpackPlugin from 'html-webpack-plugin'
+import MiniCssExtractPlugin from 'mini-css-extract-plugin'
+import applyLicenseConfig from './webpack.license.config.js'
 
 const NODE_ENV = process.env.NODE_ENV || 'production'
 const __DEV__ = NODE_ENV === 'development'
 const __TEST__ = NODE_ENV === 'test'
 const __PROD__ = NODE_ENV === 'production'
-const baseDir = path.resolve(__dirname, '..')
+const baseDir = path.resolve(import.meta.dirname, '..')
 
-const config = {
+/** @type {import('webpack').Configuration} */
+let config = {
   mode: __PROD__ ? 'production' : 'development',
   entry: {
     main: [
-      './src/main.js',
-      __DEV__ && 'webpack-hot-middleware/client', // keep only if you're using express+middleware, not WDS
+      './src/main',
+      __DEV__ && 'webpack-hot-middleware/client', // https://github.com/pmmmwh/react-refresh-webpack-plugin/issues/213
     ].filter(Boolean),
   },
   output: {
-    path: path.join(baseDir, 'build'),
-    filename: __DEV__ ? '[name].js' : '[name].[contenthash].js',
-    clean: true, // Webpack 5 built-in "clean" option
+    filename: __DEV__ ? '[name].js' : '[name].[fullhash].js',
+    path: path.join(baseDir, 'build', 'client'),
+    clean: true,
   },
   resolve: {
+    extensions: ['.ts', '.tsx', '.js', '.json'],
     modules: [
       path.join(baseDir, 'src'),
       'node_modules',
     ],
     alias: {
       '<PROJECT_ROOT>': baseDir,
-      assets: path.join(baseDir, 'assets'),
-      fonts: path.join(baseDir, 'docs', 'assets', 'fonts'),
-      shared: path.join(baseDir, 'shared'),
+      'assets': path.join(baseDir, 'assets'),
+      'fonts': path.join(baseDir, 'docs', 'assets', 'fonts'),
+      'shared': path.join(baseDir, 'shared'),
     },
     symlinks: false,
   },
   module: { rules: [] },
   plugins: [
-    new webpack.DefinePlugin({
+    new webpack.DefinePlugin(Object.assign({
       __DEV__,
       __TEST__,
       __PROD__,
-      __KF_VERSION__: JSON.stringify(process.env.npm_package_version),
-      __KF_URL_HOME__: JSON.stringify('https://www.karaoke-forever.com'),
-      __KF_URL_LICENSE__: JSON.stringify('/licenses.txt'),
-      __KF_URL_REPO__: JSON.stringify('https://github.com/bhj/karaoke-forever/'),
-      __KF_URL_SPONSOR__: JSON.stringify('https://github.com/sponsors/bhj/'),
-      __KF_COPYRIGHT__: JSON.stringify(`2019-${new Date().getFullYear()} RadRoot LLC`),
-    }),
+      __KE_VERSION__: JSON.stringify(process.env.npm_package_version),
+      __KE_URL_HOME__: JSON.stringify('https://www.karaoke-eternal.com'),
+      __KE_URL_LICENSE__: JSON.stringify('/licenses.txt'),
+      __KE_URL_REPO__: JSON.stringify('https://www.karaoke-eternal.com/repo'),
+      __KE_URL_SPONSOR__: JSON.stringify('https://www.karaoke-eternal.com/sponsor'),
+    })),
     new CaseSensitivePathsPlugin(),
     new MiniCssExtractPlugin({
-      filename: __DEV__ ? '[name].css' : '[name].[contenthash].css',
-      chunkFilename: __DEV__ ? '[id].css' : '[id].[contenthash].css',
+      filename: __DEV__ ? '[name].css' : '[name].[fullhash].css',
+      chunkFilename: __DEV__ ? '[id].css' : '[id].[fullhash].css',
     }),
     __DEV__ && new webpack.HotModuleReplacementPlugin(),
-    __DEV__ && new ReactRefreshWebpackPlugin(),
+    __DEV__ && new ReactRefreshWebpackPlugin({ overlay: { sockIntegration: 'whm' } }),
   ].filter(Boolean),
   optimization: {
     splitChunks: {
@@ -66,25 +66,6 @@ const config = {
     },
   },
   stats: 'minimal',
-}
-
-// Production-only license plugin
-if (__PROD__) {
-  config.plugins.push(new LicenseWebpackPlugin({
-    addBanner: true,
-    outputFilename: 'licenses.txt',
-    perChunkOutput: false,
-    renderLicenses: (modules) => {
-      let txt = ''
-      modules.forEach(m => {
-        if (!m.licenseText) return
-        txt += '\n' + '*'.repeat(71) + '\n\n'
-        txt += m.packageJson.name + '\n'
-        txt += m.licenseText.replace(/(\S)\n(\S)/gm, '$1 $2')
-      })
-      return 'Karaoke Forever\n' + fs.readFileSync('./LICENSE', 'utf8') + txt
-    },
-  }))
 }
 
 // HTML Template
@@ -96,82 +77,85 @@ config.plugins.push(new HtmlWebpackPlugin({
 // Loaders
 // ------------------------------------
 
-// JavaScript / JSX
+// JavaScript
 config.module.rules.push({
-  test: /\.(js|jsx)$/,
+  test: /\.(ts|js)x?$/,
   exclude: /node_modules/,
   use: [{
     loader: 'babel-loader',
     options: {
       cacheDirectory: __DEV__,
-      configFile: path.join(baseDir, 'config', 'babel.config.json'),
+      configFile: path.join(baseDir, 'config', 'babel.config.js'),
       plugins: [
-        __DEV__ && require.resolve('react-refresh/babel'),
+        __DEV__ && import.meta.resolve('react-refresh/babel'),
       ].filter(Boolean),
     },
   }],
 })
 
-// Global CSS (files matching *global.css)
+// Global Style
 config.module.rules.push({
   test: /(global)\.css$/,
-  use: [
-    MiniCssExtractPlugin.loader,
-    {
-      loader: 'css-loader',
-      options: {
-        modules: false, // no CSS Modules for global files
-        sourceMap: __DEV__,
-      }
-    }
-  ],
+  use: [{
+    loader: MiniCssExtractPlugin.loader,
+  }, {
+    loader: 'css-loader',
+    options: {
+      modules: false,
+      sourceMap: false,
+    },
+  }],
 })
 
-// CSS Modules (all .css except global)
+// CSS Modules
 config.module.rules.push({
   test: /\.css$/,
   exclude: /(global)\.css$/,
   use: [
-    MiniCssExtractPlugin.loader,
     {
+      loader: MiniCssExtractPlugin.loader,
+    }, {
       loader: 'css-loader',
       options: {
         modules: {
-          mode: 'local', // enable CSS Modules
-          localIdentName: __DEV__ ? '[path][name]__[local]__' : '[hash:base64]',
-          exportLocalsConvention: 'camelCaseOnly',
-          exportOnlyLocals: false, // needed to generate a default export object
-          namedExport:false
+          namedExport: false,
+          exportLocalsConvention: 'as-is',
+          localIdentName: __DEV__ ? '[name]__[local]--[hash:base64:5]' : '[hash:base64]',
         },
       },
     },
   ],
 })
 
-// Asset Modules (replaces url-loader/file-loader)
+// Files
 config.module.rules.push(
   {
     test: /\.woff2(\?.*)?$/,
     type: 'asset/resource',
-    generator: { filename: 'fonts/[name][ext]' }
   },
   {
     test: /\.svg(\?.*)?$/,
-    type: 'asset/resource',
-    generator: { filename: 'images/[name][ext]' }
+    type: 'asset',
   },
   {
-    test: /\.(png|jpe?g|gif)$/i,
+    test: /\.(png|jpg|gif)$/,
     type: 'asset',
-    parser: { dataUrlCondition: { maxSize: 8 * 1024 } }, // inline <8kb, file otherwise
-    generator: { filename: 'images/[name][ext]' }
-  }
+  },
 )
 
 // Markdown
 config.module.rules.push({
   test: /\.md$/,
-  use: ['html-loader', 'markdown-loader']
+  use: [
+    {
+      loader: 'html-loader',
+    },
+    {
+      loader: 'markdown-loader',
+    },
+  ],
 })
 
-module.exports = config
+if (__PROD__) config = applyLicenseConfig(config)
+
+export default config

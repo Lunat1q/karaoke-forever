@@ -1,45 +1,54 @@
 ---
 title: Overview
+seoTitle: Karaoke Eternal | Open karaoke party system
+description: Host awesome karaoke parties where everyone can easily find and queue songs from their phone's browser. The player is also fully browser-based with support for MP3+G, MP4 videos and WebGL visualizations. The server is self-hosted and runs on nearly everything.
 ---
 
-Host awesome karaoke parties where everyone can easily find and queue songs from their phone's web browser. Use your own database of karaoke songs, or enable YouTube search with automatic vocal removal and lyrics alignment. The player is also browser-based with support for MP3+G, MP4 video and WebGL visualizations. The server is self-hosted with no internet connection required (unless YouTube search is enabled).
+Host awesome karaoke parties where everyone can easily find and queue songs from their phone's browser. The player is also fully browser-based with support for MP3+G, MP4 videos and WebGL visualizations. The server is self-hosted and runs on nearly everything.
 
 {{< screenshots >}}
 
 <p style="text-align: center;">
-  <i>App in mobile browser (top/left) controlling player in Firefox/Chrome (bottom/right)</i>
+  <i>App in mobile browser (top) controlling player in desktop browser (bottom)</i>
 </p>
 
 ## Features
 
-- [MP3+G](https://en.wikipedia.org/wiki/MP3%2BG){{% icon-external %}} and MP4 video support
-- YouTube search with automatic vocal removal and accurate word-level lyrics alignment
-- [MilkDrop](https://en.wikipedia.org/wiki/MilkDrop){{% icon-external %}}-style visualizations via [Butterchurn](https://github.com/jberg/butterchurn){{% icon-external %}} (requires WebGL 2)
-- [ReplayGain](https://en.wikipedia.org/wiki/ReplayGain){{% icon-external %}} volume normalization support
-- Singers prioritized by time since each last sang
+- Plays:
+  - MP3+G (MP3 with CDG lyrics; including zipped)
+  - MP4 videos
+  - Music-synced visualizations (with automatic lyrics background removal)
+- Fast, modern mobile browser app designed for "karaoke conditions"
+- Easy joining with QR codes and guest accounts
 - Multiple simultaneous rooms/queues (optionally password-protected)
-- No ads or telemetry; all data stored locally
+- Dynamic queues keep parties fair, fun and no-fuss
+- Fully self-hosted
+- No ads or telemetry
 
-Karaoke Forever assumes its player will be mixed with any microphones (either in software or an outboard mixer). See the <a href='{{< ref "faq.md/#whats-the-recommended-audio-setup" >}}'>F.A.Q.</a> for more information.
-
-## Download & Install
-
-See <a href="{{% baseurl %}}download">Releases</a>{{% icon-external %}} available for your OS, as well as the <a href='{{< ref "docs/index.md/#karaoke-forever-server" >}}'>installation documentation</a>.
-
-Please note that the main branch is actively developed and is not guaranteed to be stable.
+Microphones are *not* required since the player itself only outputs music - this allows your audio setup to be as simple or complex as you like. See the <a href='{{< ref "faq.md/#recommended-audio-microphone-setup" >}}'>F.A.Q.</a> for more information.
 
 ## Getting Started
 
- Karaoke Forever basically has 3 parts. You can jump to the documentation for each below, or <a href='{{< ref "docs/index.md/#quick-start" >}}'>Quick Start</a> to get up and running step-by-step.
+ Karaoke Eternal basically has 3 parts. See <a href='{{< ref "docs/getting-started" >}}'>Getting Started</a> to get up and running step-by-step, or jump to the documentation for each part below:
 
-- **<a href='{{< ref "docs/index.md/#karaoke-forever-server" >}}'>Server:</a>** Runs on almost any OS to serve the app and your media files
-- **<a href='{{< ref "docs/index.md/#karaoke-forever-the-web-app" >}}'>App:</a>** Fast, modern mobile browser app designed for "karaoke conditions"
-- **<a href='{{< ref "docs/index.md/#player" >}}'>Player:</a>** Just another part of the app, designed to run fullscreen on the system handling audio/video for a <a href='{{< ref "docs/index.md/#rooms-admin-only" >}}'>room</a>
+- **<a href='{{< ref "docs/karaoke-eternal-server" >}}'>Server:</a>** Runs on pretty much anything to serve the web app and your media files.
+- **<a href='{{< ref "docs/karaoke-eternal-app" >}}'>App:</a>** Fast, modern mobile web app designed for "karaoke conditions".
+- **<a href='{{< ref "docs/karaoke-eternal-app/#player" >}}'>Player:</a>** Just another part of the app, but meant to run fullscreen on the system handling audio/video for a <a href='{{< ref "docs/karaoke-eternal-app/#rooms-admin-only" >}}'>room</a>.
 
-## Discord / Support
+## Installation
 
-Join the [Karaoke Forever Discord Server](https://discord.gg/PgqVtFq){{% icon-external %}} for general support and development chat, or just to say hi!
+There are several <a href='{{< ref "docs/karaoke-eternal-server#installation" >}}'>installation methods</a> available for Karaoke Eternal Server.
+
+## Discord & Support
+
+Join the <a href="{{% baseurl %}}discord" rel="noopener">Karaoke Eternal Discord Server</a>{{% icon-external %}} for general support and development chat, or just to say hi!
 
 ## Contributing & Development
 
 See the <a href="{{% baseurl %}}repo">GitHub project page</a>{{% icon-external %}}.
+
+## Acknowledgements
+
+- [David Zukowski](https://zuko.me){{% icon-external %}}: react-redux-starter-kit, which this project began as a fork of (all contributors up until it was detached to its own project are listed on the Contributors page)
+- [Luke Tucker](https://github.com/ltucker/){{% icon-external %}}: the original JavaScript CD+Graphics implementation
+- Mic favicon by [Freepik](https://www.freepik.com/){{% icon-external %}} from [flaticon.com](https://www.flaticon.com/){{% icon-external %}}
