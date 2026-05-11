@@ -5,7 +5,6 @@ import QueueItem from '../QueueItem/QueueItem'
 import QueueYoutubeItem from '../QueueYoutubeItem/QueueYoutubeItem'
 import QueueListAnimator from '../QueueListAnimator/QueueListAnimator'
 import { formatSeconds } from 'lib/dateTime'
-import { durationToSeconds } from 'lib/dateTime'
 import { moveItem, removeUpcomingItems } from '../../modules/queue'
 import getPlayerHistory from '../../selectors/getPlayerHistory'
 import getRoundRobinQueue from '../../selectors/getRoundRobinQueue'
@@ -49,7 +48,7 @@ const QueueList = () => {
     const item = queue.entities[qId] as any
     const isYouTube = item.mediaType === 'youtube'
     const duration = isYouTube
-      ? durationToSeconds(item.youtubeVideoDuration || '0:00')
+      ? (item.youtubeVideoDuration || 0)
       : songs.entities[item.songId]?.duration || 0
     const isCurrent = (qId === queueId) && !isAtQueueEnd
     const isUpcoming = qId !== queueId && !playerHistory.includes(qId)

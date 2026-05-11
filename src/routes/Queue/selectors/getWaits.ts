@@ -3,7 +3,6 @@ import { createSelector } from '@reduxjs/toolkit'
 import getPlayerHistory from './getPlayerHistory'
 import getRoundRobinQueue from './getRoundRobinQueue'
 
-import { durationToSeconds } from 'lib/dateTime'
 
 const getPosition = (state: RootState) => state.status.position
 const getQueue = (state: RootState) => getRoundRobinQueue(state)
@@ -25,7 +24,7 @@ const getWaits = createSelector(
 
       let duration: number
       if (isYouTube) {
-        duration = durationToSeconds(item.youtubeVideoDuration || '0:00')
+        duration = item.youtubeVideoDuration || 0
       } else {
         if (!songs.entities[songId]) return
         duration = songs.entities[songId].duration
