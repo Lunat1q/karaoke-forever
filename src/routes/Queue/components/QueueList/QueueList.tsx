@@ -5,9 +5,7 @@ import QueueItem from '../QueueItem/QueueItem'
 import QueueYoutubeItem from '../QueueYoutubeItem/QueueYoutubeItem'
 import QueueListAnimator from '../QueueListAnimator/QueueListAnimator'
 import { formatSeconds } from 'lib/dateTime'
-import { moveItem, removeItem, removeUpcomingItems } from '../../modules/queue'
-import { requestPlayNext } from 'store/modules/status'
-import { showErrorMessage } from 'store/modules/ui'
+import { moveItem, removeUpcomingItems } from '../../modules/queue'
 import getPlayerHistory from '../../selectors/getPlayerHistory'
 import getRoundRobinQueue from '../../selectors/getRoundRobinQueue'
 import getWaits from '../../selectors/getWaits'
@@ -76,11 +74,8 @@ const QueueList = () => {
           pctPlayed={isCurrent ? position / duration * 100 : 0}
           title={item.youtubeVideoTitle || ''}
           wait={formatSeconds(waits[qId], true)}
-          onErrorInfoClick={(msg: string) => dispatch(showErrorMessage(msg))}
           onMoveClick={handleMoveClick}
-          onRemoveClick={(queueId: number) => dispatch(removeItem({ queueId }))}
           onRemoveUpcoming={handleRemoveUpcoming}
-          onSkipClick={() => dispatch(requestPlayNext())}
         />
       )
     }
