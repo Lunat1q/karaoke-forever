@@ -1,34 +1,34 @@
-const log = require('./lib/Log')
-  .set('console', process.env.KF_YOUTUBE_CONSOLE_LEVEL, process.env.NODE_ENV === 'development' ? 5 : 4)
-  .set('file', process.env.KF_YOUTUBE_LOG_LEVEL, process.env.NODE_ENV === 'development' ? 0 : 3)
-  .getLogger(`youtube[${process.pid}]`)
-const Database = require('./lib/Database')
-const IPC = require('./lib/IPCBridge')
-const {
-  YOUTUBE_CMD_STOP,
-  YOUTUBE_CMD_UPDATE,
-} = require('../shared/actionTypes')
+import { initLogger } from './lib/Log.js'
+import path from 'path'
+import env from './lib/cli.js'
 
-let YoutubeProcessor, Prefs
+const log = initLogger('youtube', {
+  console: { level: 4 },
+  file: { level: 3 },
+}).scope(`youtube[${process.pid}]`)
+
+const { open } = await import('./lib/Database.js')
+const { default: IPC } = await import('./lib/IPCBridge.js')
+const { YOUTUBE_CMD_STOP, YOUTUBE_CMD_UPDATE } = await import('../shared/actionTypes.js')
+const { default: Prefs } = await import('./Prefs/Prefs.js')
+const { default: YoutubeProcessor } = await import('./Youtube/YoutubeProcessor/index.js')
+
 let _Processor
 
-Database.open({ readonly: true, log: log.info }).then(db => {
-  Prefs = require('./Prefs')
-  YoutubeProcessor = require('./Youtube/YoutubeProcessor')
+open({ file: path.join(env.KES_PATH_DATA, 'database.sqlite3'), ro: true })
 
-  IPC.use({
-    [YOUTUBE_CMD_STOP]: async () => {
-      log.info('Stopping YouTube processor gracefully')
-      cancelProcessing()
-    },
-    [YOUTUBE_CMD_UPDATE]: async () => {
-      log.info('Updating YouTube processor')
-      update()
-    }
-  })
-
-  startProcessing()
+IPC.use({
+  [YOUTUBE_CMD_STOP]: async () => {
+    log.info('Stopping YouTube processor gracefully')
+    cancelProcessing()
+  },
+  [YOUTUBE_CMD_UPDATE]: async () => {
+    log.info('Updating YouTube processor')
+    update()
+  }
 })
+
+startProcessing()
 
 async function startProcessing () {
   log.info('Starting YouTube processor')

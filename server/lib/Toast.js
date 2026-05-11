@@ -18,4 +18,4 @@ class Toast {
   }
 }
 
-module.exports = Toast
+export default Toast

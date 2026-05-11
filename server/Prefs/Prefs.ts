@@ -112,7 +112,7 @@ class Prefs {
    * @param data - the value to be JSON-encoded
    * @return Success/fail boolean
    */
-  static set (key: string, data: any): boolean {
+  static async set (key: string, data: any): Promise<boolean> {
     const query = sql`
       REPLACE INTO prefs (key, data)
       VALUES (${key}, ${JSON.stringify(data)})
@@ -121,7 +121,7 @@ class Prefs {
 
     // in case one of the youtube prefs was updated, update the processor (if it's running)
     try {
-      const YoutubeProcessManager = require('../Youtube/YoutubeProcessManager')
+      const YoutubeProcessManager = await import('../Youtube/YoutubeProcessManager.js')
       YoutubeProcessManager.updateYoutubeProcessor()
     } catch { /* YouTube module may not be available */ }
 

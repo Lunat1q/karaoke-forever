@@ -1,3 +1,1 @@
-const YoutubeProcessor = require('./YoutubeProcessor')
-
-module.exports = YoutubeProcessor
+export { default } from './YoutubeProcessor.js'

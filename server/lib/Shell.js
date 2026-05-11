@@ -1,4 +1,4 @@
-const { exec } = require('child_process')
+import { exec } from 'child_process'
 
 class Shell {
   static sleep (ms) {
@@ -66,4 +66,4 @@ class Shell {
   }
 }
 
-module.exports = Shell
+export default Shell

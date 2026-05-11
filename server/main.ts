@@ -51,13 +51,17 @@ if (Number.isInteger(env.KES_PUID)) {
   process.on(event, shutdown)
 })
 
+let YoutubeProcessManagerModule: any = null
+try {
+  YoutubeProcessManagerModule = await import('./Youtube/YoutubeProcessManager.js')
+} catch { /* YouTube module may not be available */ }
+
 // make sure child processes don't hang around
 process.on('exit', () => {
   Object.values(refs).forEach(ref => ref.kill())
-  try {
-    const YoutubeProcessManager = require('./Youtube/YoutubeProcessManager')
-    YoutubeProcessManager.killYoutubeProcess()
-  } catch { /* YouTube module may not be available */ }
+  if (YoutubeProcessManagerModule) {
+    YoutubeProcessManagerModule.killYoutubeProcess()
+  }
 })
 
 // debug: log stack trace for unhandled promise rejections

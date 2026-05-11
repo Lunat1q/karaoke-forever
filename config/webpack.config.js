@@ -81,6 +81,7 @@ config.plugins.push(new HtmlWebpackPlugin({
 config.module.rules.push({
   test: /\.(ts|js)x?$/,
   exclude: /node_modules/,
+  resolve: { fullySpecified: false },
   use: [{
     loader: 'babel-loader',
     options: {

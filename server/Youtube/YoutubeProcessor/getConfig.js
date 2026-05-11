@@ -1,7 +1,9 @@
-const path = require('path')
-const log = require('../../lib/Log').getLogger('YoutubeProcessor')
-const fs = require('fs')
-const { NodeVM } = require('vm2')
+import path from 'path'
+import getLogger from '../../lib/Log.js'
+import fs from 'fs'
+import { NodeVM } from 'vm2'
+
+const log = getLogger('YoutubeProcessor')
 const KF_CONFIG = '_kfconfig.js'
 
 // search each folder from dir up to baseDir
@@ -32,4 +34,4 @@ function getConfig (dir, baseDir) {
   return getConfig(path.resolve(dir, '..'), baseDir)
 }
 
-module.exports = getConfig
+export default getConfig

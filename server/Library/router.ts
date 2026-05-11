@@ -49,7 +49,7 @@ router.post('/youtubesearch', async (ctx) => {
 
   let youtubesearchapi
   try {
-    youtubesearchapi = require('youtube-search-api')
+    youtubesearchapi = (await import('youtube-search-api')).default
   } catch {
     ctx.throw(500, 'youtube-search-api package not installed')
     return
@@ -129,7 +129,7 @@ router.post('/youtubeidentify', async (ctx) => {
 
   let getArtistTitle
   try {
-    getArtistTitle = require('get-artist-title')
+    getArtistTitle = (await import('get-artist-title')).default
   } catch {
     ctx.throw(500, 'get-artist-title package not installed')
     return
@@ -158,7 +158,7 @@ router.post('/youtubeidentify', async (ctx) => {
   if (body.video.karaoke) return
 
   try {
-    const Genius = require('genius-lyrics')
+    const Genius = (await import('genius-lyrics')).default
     const Client = new Genius.Client()
     const songs = await Client.songs.search(query)
 

@@ -1,11 +1,13 @@
-const { promisify } = require('util')
-const fs = require('fs')
+import { promisify } from 'util'
+import fs from 'fs'
+import path from 'path'
+import getLogger from '../lib/Log.js'
+import KoaRouter from '@koa/router'
+import Prefs from '../Prefs/Prefs.js'
+
 const stat = promisify(fs.stat)
-const path = require('path')
-const log = require('../lib/Log').getLogger('Youtube')
-const KoaRouter = require('koa-router')
-const router = KoaRouter({ prefix: '/api/youtube' })
-const Prefs = require('../Prefs')
+const log = getLogger('Youtube')
+const router = new KoaRouter({ prefix: '/api/youtube' })
 
 // stream a youtube karaoke.mp4 file
 router.get('/:youtubeVideoId', async (ctx, next) => {
@@ -31,4 +33,4 @@ router.get('/:youtubeVideoId', async (ctx, next) => {
   ctx.body = fs.createReadStream(file)
 })
 
-module.exports = router
+export default router

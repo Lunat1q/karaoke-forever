@@ -1,23 +1,24 @@
-const sql = require('sqlate')
-const env = require('../lib/cli')
-const log = require('../lib/Log')
-  .set('console', env.KF_SERVER_CONSOLE_LEVEL, env.NODE_ENV === 'development' ? 5 : 4)
-  .set('file', env.KF_SERVER_LOG_LEVEL, env.NODE_ENV === 'development' ? 0 : 3)
-  .getLogger(`main[${process.pid}]`)
-const IPC = require('../lib/IPCBridge')
-const childProcess = require('child_process')
-const path = require('path')
-
-const {
+import sql from 'sqlate'
+import env from '../lib/cli.js'
+import getLogger from '../lib/Log.js'
+import IPC from '../lib/IPCBridge.js'
+import childProcess from 'child_process'
+import path from 'path'
+import { fileURLToPath } from 'url'
+import {
   YOUTUBE_CMD_STOP,
   YOUTUBE_CMD_UPDATE,
-} = require('../../shared/actionTypes')
+} from '../../shared/actionTypes.js'
+
+const __filename = fileURLToPath(import.meta.url)
+const __dirname = path.dirname(__filename)
+const log = getLogger(`main[${process.pid}]`)
 
 let youtubeProcess = null
 
 const resetProcessingVideos = async () => {
   // reset videos left in any sort of processing state...
-  const db = require('../lib/Database').db // need to wait until here to do this so the DB is connected. This seems hackish?
+  const { db } = await import('../lib/Database.js')
   log.info('Resetting YouTube videos left processing')
   const query = sql`
     UPDATE youtubeVideos SET status='pending'
@@ -70,7 +71,4 @@ const killYoutubeProcess = () => {
   }
 }
 
-exports.startYoutubeProcessor = startYoutubeProcessor
-exports.stopYoutubeProcessor = stopYoutubeProcessor
-exports.killYoutubeProcess = killYoutubeProcess
-exports.updateYoutubeProcessor = updateYoutubeProcessor
+export { startYoutubeProcessor, stopYoutubeProcessor, killYoutubeProcess, updateYoutubeProcessor }

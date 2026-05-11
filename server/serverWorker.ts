@@ -41,7 +41,7 @@ async function serverWorker ({ env, startScanner, stopScanner, shutdownHandlers 
   let server, io
 
   // called when middleware is finalized
-  function createServer () {
+  async function createServer () {
     server = http.createServer(app.callback())
 
     // http server error handler
@@ -72,7 +72,7 @@ async function serverWorker ({ env, startScanner, stopScanner, shutdownHandlers 
 
     // start YouTube processing on startup (in case we shutdown in the middle of processing)
     try {
-      const YoutubeProcessManager = require('./Youtube/YoutubeProcessManager')
+      const YoutubeProcessManager = await import('./Youtube/YoutubeProcessManager.js')
       YoutubeProcessManager.startYoutubeProcessor()
     } catch { /* YouTube module may not be available */ }
 

@@ -1,7 +1,7 @@
-const IPC = require('../lib/IPCBridge')
-const {
+import IPC from '../lib/IPCBridge.js'
+import {
   YOUTUBE_WORKER_STATUS,
-} = require('../../shared/actionTypes')
+} from '../../shared/actionTypes.js'
 
 class Youtube {
   constructor () {
@@ -30,4 +30,4 @@ class Youtube {
   }
 }
 
-module.exports = Youtube
+export default Youtube

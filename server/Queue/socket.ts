@@ -89,7 +89,7 @@ const ACTION_HANDLERS = {
 
       // make sure the youtube processor is running
       try {
-        const YoutubeProcessManager = require('../Youtube/YoutubeProcessManager')
+        const YoutubeProcessManager = await import('../Youtube/YoutubeProcessManager.js')
         YoutubeProcessManager.startYoutubeProcessor()
       } catch { /* YouTube module may not be available */ }
     }

@@ -1,20 +1,19 @@
-const fs = require('fs')
-const rimraf = require('rimraf')
-const youtubedl = require('youtube-dl-exec')
-const axios = require('axios')
-const FormData = require('form-data')
-const db = require('../../lib/Database').db
-const sql = require('sqlate')
-const shell = require('../../lib/Shell')
-const log = require('../../lib/Log')
-  .set('console', process.env.KF_YOUTUBE_CONSOLE_LEVEL, process.env.NODE_ENV === 'development' ? 5 : 4)
-  .set('file', process.env.KF_YOUTUBE_LOG_LEVEL, process.env.NODE_ENV === 'development' ? 0 : 3)
-  .getLogger(`youtube[${process.pid}]`)
-const Youtube = require('../Youtube')
-const IPC = require('../../lib/IPCBridge')
-const {
+import fs from 'fs'
+import { rimraf } from 'rimraf'
+import youtubedl from 'youtube-dl-exec'
+import axios from 'axios'
+import FormData from 'form-data'
+import { db } from '../../lib/Database.js'
+import sql from 'sqlate'
+import shell from '../../lib/Shell.js'
+import getLogger from '../../lib/Log.js'
+import Youtube from '../Youtube.js'
+import IPC from '../../lib/IPCBridge.js'
+import {
   YOUTUBE_VIDEO_UPDATE
-} = require('../../../shared/actionTypes')
+} from '../../../shared/actionTypes.js'
+
+const log = getLogger(`youtube[${process.pid}]`)
 
 class YoutubeProcessor extends Youtube {
   constructor (prefs) {
@@ -223,7 +222,7 @@ class YoutubeProcessor extends Youtube {
         try {
           fs.unlinkSync(outputDir + '/audio.mp3')
           fs.unlinkSync(outputDir + '/video.mp4')
-          rimraf(outputDir + '/audio', () => { })
+          rimraf(outputDir + '/audio').catch(() => {})
         } catch (err) {
           /* not a big deal. ignore deletion errors. */
         }
@@ -322,4 +321,4 @@ class YoutubeProcessor extends Youtube {
   }
 }
 
-module.exports = YoutubeProcessor
+export default YoutubeProcessor

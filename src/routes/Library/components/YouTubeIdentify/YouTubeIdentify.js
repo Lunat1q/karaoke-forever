@@ -5,7 +5,7 @@ import styles from './YouTubeIdentify.css'
 import ColorCycle from '../../../Player/components/PlayerTextOverlay/ColorCycle'
 import HttpApi from 'lib/HttpApi'
 import { _ERROR, USERS_REQUEST } from '../../../../../shared/actionTypes'
-import { fetchUsers, receiveUsers } from '../../../Account/modules/users'
+import { fetchUsers } from '../../../Account/modules/users'
 import { durationToSeconds } from 'lib/dateTime'
 import YouTubeSongItem from '../YouTubeSongItem'
 
