@@ -29,6 +29,8 @@ export const setFilterStr = createAction(LIBRARY_FILTER_STRING, (payload: string
   },
 }))
 
+export const setYoutubeSearchQuery = createAction<string | null>('YOUTUBE_SEARCH_QUERY')
+
 // ------------------------------------
 // Reducer
 // ------------------------------------
@@ -40,6 +42,7 @@ interface LibraryState {
   scrollRow: number
   expandedArtists: number[]
   expandedArtistResults: number[]
+  youtubeSearchQuery: string | null
 }
 
 const initialState: LibraryState = {
@@ -50,6 +53,7 @@ const initialState: LibraryState = {
   scrollRow: 0,
   expandedArtists: [],
   expandedArtistResults: [],
+  youtubeSearchQuery: null,
 }
 
 const libraryReducer = createReducer(initialState, (builder) => {
@@ -83,6 +87,9 @@ const libraryReducer = createReducer(initialState, (builder) => {
       isLoading: false,
       version: payload.version,
     }))
+    .addCase(setYoutubeSearchQuery, (state, { payload }) => {
+      state.youtubeSearchQuery = payload
+    })
 })
 
 export default libraryReducer

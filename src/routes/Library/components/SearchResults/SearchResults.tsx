@@ -15,6 +15,7 @@ const ROW_HEIGHT_RESULT_HEADING = 24
 const ROW_HEIGHT_ARTIST = 48
 const ROW_HEIGHT_SONG = 56 // 52px + 4px margin
 const ROW_HEIGHT_SONG_WITH_ARTIST = 68 // 64px + 4px margin
+const ROW_HEIGHT_YOUTUBE_BUTTON = 56
 
 interface SearchResultsProps {
   // starredArtistCounts: Record<number, number> // @todo
@@ -31,6 +32,8 @@ interface CustomRowProps {
   artistsResult: number[]
   songsResult: number[]
   expandedArtistResults: number[]
+  onYouTubeSearch?: (query: string) => void
+  filterStr: string
 }
 
 // this is outside the SearchResults component to keep the reference as stable as possible,
@@ -43,9 +46,11 @@ const RowComponent = ({
   artists,
   filterKeywords,
   filterStarred,
+  filterStr,
   artistsResult,
   songsResult,
   expandedArtistResults,
+  onYouTubeSearch,
 }: RowComponentProps<CustomRowProps>) => {
   const { starredSongs } = useAppSelector(state => ensureState(state.userStars))
   const { upcoming } = useAppSelector(getSongsStatus)
@@ -97,15 +102,33 @@ const RowComponent = ({
   }
 
   // song results
-  return (
-    <div style={style} key='songs'>
-      <SongList
-        songIds={songsResult}
-        showArtist
-        filterKeywords={filterKeywords}
-      />
-    </div>
-  )
+  if (index === artistsResult.length + 2) {
+    return (
+      <div style={style} key='songs'>
+        <SongList
+          songIds={songsResult}
+          showArtist
+          filterKeywords={filterKeywords}
+        />
+      </div>
+    )
+  }
+
+  // YouTube search button
+  if (index === artistsResult.length + 3 && onYouTubeSearch) {
+    return (
+      <div style={style} key='youtubeSearch' className={styles.youtubeSearch}>
+        <button
+          onClick={() => onYouTubeSearch(filterStr)}
+          className={styles.youtubeSearchBtn}
+        >
+          Search YouTube for &quot;{filterStr}&quot;
+        </button>
+      </div>
+    )
+  }
+
+  return null
 }
 
 const SearchResults = ({ ui, onYouTubeSearch }: SearchResultsProps) => {
@@ -138,7 +161,12 @@ const SearchResults = ({ ui, onYouTubeSearch }: SearchResultsProps) => {
     if (index === artistsResult.length + 1) return ROW_HEIGHT_RESULT_HEADING
 
     // song results
-    return songsResult.length * ROW_HEIGHT_SONG_WITH_ARTIST
+    if (index === artistsResult.length + 2) return songsResult.length * ROW_HEIGHT_SONG_WITH_ARTIST
+
+    // YouTube search button
+    if (index === artistsResult.length + 3) return ROW_HEIGHT_YOUTUBE_BUTTON
+
+    return 0
   }
 
   const handleRef = (ref: ListImperativeAPI) => {
@@ -156,12 +184,14 @@ const SearchResults = ({ ui, onYouTubeSearch }: SearchResultsProps) => {
         artists,
         filterStarred,
         filterKeywords,
+        filterStr,
         artistsResult,
         songsResult,
         expandedArtistResults,
+        onYouTubeSearch,
       }}
       rowHeight={rowHeight}
-      numRows={artistsResult.length + 3}
+      numRows={artistsResult.length + 3 + (onYouTubeSearch ? 1 : 0)}
       paddingTop={ui.headerHeight}
       paddingRight={4}
       paddingBottom={ui.footerHeight}

@@ -73,7 +73,7 @@ const ACTION_HANDLERS = {
         youtubeInsertFields.set('artist', payload.artist)
         youtubeInsertFields.set('title', payload.title)
         youtubeInsertFields.set('lyrics', payload.lyrics)
-        youtubeInsertFields.set('karaoke', payload.karaoke)
+        youtubeInsertFields.set('karaoke', payload.karaoke ? 1 : 0)
         youtubeInsertFields.set('status', 'pending')
 
         const youtubeInsertQuery = sql`

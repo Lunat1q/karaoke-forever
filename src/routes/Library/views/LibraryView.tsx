@@ -1,6 +1,7 @@
 import React, { useState, useCallback } from 'react'
-import { useAppSelector } from 'store/hooks'
+import { useAppDispatch, useAppSelector } from 'store/hooks'
 import { Link } from 'react-router'
+import { setYoutubeSearchQuery } from '../modules/library'
 import ArtistList from '../components/ArtistList/ArtistList'
 import SearchResults from '../components/SearchResults/SearchResults'
 import YouTubeSearch from '../components/YouTubeSearch/YouTubeSearch'
@@ -10,23 +11,23 @@ import styles from './LibraryView.css'
 
 const LibraryView = () => {
   const { isAdmin } = useAppSelector(state => state.user)
-  const { isLoading, filterStr, filterStarred } = useAppSelector(state => state.library)
+  const { isLoading, filterStr, filterStarred, youtubeSearchQuery } = useAppSelector(state => state.library)
   const isYouTubeEnabled = useAppSelector(state => (state.prefs as any).isYouTubeEnabled)
   const songsResult = useAppSelector(state => state.songs.result)
   const ui = useAppSelector(state => state.ui)
 
+  const dispatch = useAppDispatch()
   const isSearching = !!filterStr.trim().length || filterStarred
   const [initialHeaderHeight] = useState(ui.headerHeight)
   const [finalHeaderHeight, setFinalHeaderHeight] = useState(null)
-  const [youtubeSearchQuery, setYoutubeSearchQuery] = useState<string | null>(null)
 
   const handleYouTubeSearch = useCallback((query: string) => {
-    setYoutubeSearchQuery(query)
-  }, [])
+    dispatch(setYoutubeSearchQuery(query))
+  }, [dispatch])
 
   const handleYouTubeDone = useCallback(() => {
-    setYoutubeSearchQuery(null)
-  }, [])
+    dispatch(setYoutubeSearchQuery(null))
+  }, [dispatch])
 
   // don't render ArtistList until headerHeight is stable; otherwise
   // scroll position restoration does not work well (appears OBO)

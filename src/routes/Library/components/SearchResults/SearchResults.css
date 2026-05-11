@@ -7,3 +7,24 @@
   background-color: hsl(var(--hue-blue), 90%, 25%);
   font-size: 18px;
 }
+
+.youtubeSearch {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 8px 16px;
+}
+
+.youtubeSearchBtn {
+  padding: 8px 24px;
+  border: none;
+  border-radius: 4px;
+  background-color: #c00;
+  color: #fff;
+  font-size: 16px;
+  cursor: pointer;
+}
+
+.youtubeSearchBtn:hover {
+  background-color: #e00;
+}

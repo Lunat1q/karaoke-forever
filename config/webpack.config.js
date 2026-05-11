@@ -14,7 +14,7 @@ const baseDir = path.resolve(import.meta.dirname, '..')
 
 /** @type {import('webpack').Configuration} */
 let config = {
-  mode: __PROD__ ? 'production' : 'development',
+  mode: process.env.WEBPACK_NO_MINIMIZE ? 'development' : (__PROD__ ? 'production' : 'development'),
   entry: {
     main: [
       './src/main',
@@ -61,10 +61,12 @@ let config = {
     __DEV__ && new ReactRefreshWebpackPlugin({ overlay: { sockIntegration: 'whm' } }),
   ].filter(Boolean),
   optimization: {
+    minimize: !process.env.WEBPACK_NO_MINIMIZE,
     splitChunks: {
       chunks: 'all',
     },
   },
+  devtool: process.env.WEBPACK_NO_MINIMIZE ? 'source-map' : false,
   stats: 'minimal',
 }
 

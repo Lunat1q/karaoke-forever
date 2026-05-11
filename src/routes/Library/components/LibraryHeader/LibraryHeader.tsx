@@ -1,13 +1,14 @@
 import React, { useState, useRef } from 'react'
 import clsx from 'clsx'
 import { useAppDispatch, useAppSelector } from 'store/hooks'
-import { setFilterStr, resetFilterStr, toggleFilterStarred } from '../../modules/library'
+import { setFilterStr, resetFilterStr, toggleFilterStarred, setYoutubeSearchQuery } from '../../modules/library'
 import Button from 'components/Button/Button'
 import styles from './LibraryHeader.css'
 
-const LibraryHeader = ({ onYouTubeSearch }: { onYouTubeSearch?: (query: string) => void }) => {
+const LibraryHeader = () => {
   const dispatch = useAppDispatch()
   const { filterStr, filterStarred } = useAppSelector(state => state.library)
+  const isYouTubeEnabled = useAppSelector(state => (state.prefs as any).isYouTubeEnabled)
 
   const searchInput = useRef<HTMLInputElement>(null)
   const [value, setValue] = useState(filterStr)
@@ -18,8 +19,8 @@ const LibraryHeader = ({ onYouTubeSearch }: { onYouTubeSearch?: (query: string) 
   }
 
   const handleKeyDown = (event: React.KeyboardEvent<HTMLInputElement>) => {
-    if (event.key === 'Enter' && onYouTubeSearch && value.trim()) {
-      onYouTubeSearch(value.trim())
+    if (event.key === 'Enter' && isYouTubeEnabled && value.trim()) {
+      dispatch(setYoutubeSearchQuery(value.trim()))
     }
   }
 
