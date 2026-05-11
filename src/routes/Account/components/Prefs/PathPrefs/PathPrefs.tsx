@@ -93,7 +93,7 @@ const PathPrefs = () => {
           && <p style={{ marginTop: 0 }}>Add a media folder to get started.</p>}
         <DragDropContext onDragEnd={handleDragEnd}>
           <Droppable droppableId='droppable'>
-            {provided => (
+            {(provided, snapshot) => (
               <div ref={provided.innerRef} {...provided.droppableProps}>
                 {priority.map((pathId, i) => (
                   <PathItem
@@ -105,7 +105,7 @@ const PathPrefs = () => {
                   />
                 ),
                 )}
-                {provided.placeholder}
+                {snapshot.isDraggingOver && provided.placeholder}
               </div>
             )}
           </Droppable>
