@@ -31,7 +31,7 @@ const startYoutubeProcessor = async () => {
   if (youtubeProcess === null) {
     await resetProcessingVideos()
     log.info('Starting YouTube processor')
-    let options = { env: { ...env, KF_CHILD_PROCESS: 'youtube' } }
+    let options = { env: { ...env, KES_CHILD_PROCESS: 'youtube' } }
     if (process.env.NODE_ENV === 'development') {
       options.execArgv = ['--inspect=5724']
     }

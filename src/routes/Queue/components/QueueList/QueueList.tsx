@@ -73,6 +73,7 @@ const QueueList = () => {
           isUpcoming={isUpcoming}
           pctPlayed={isCurrent ? position / duration * 100 : 0}
           title={item.youtubeVideoTitle || ''}
+          status={item.youtubeVideoStatus}
           wait={formatSeconds(waits[qId], true)}
           onMoveClick={handleMoveClick}
           onRemoveUpcoming={handleRemoveUpcoming}
