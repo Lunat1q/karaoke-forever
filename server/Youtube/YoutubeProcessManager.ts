@@ -29,7 +29,7 @@ const startYoutubeProcessor = async () => {
       options.execArgv = ['--inspect=5724']
     }
 
-    youtubeProcess = childProcess.fork(path.join(import.meta.dirname, 'youtubeWorker.js'), [], options)
+    youtubeProcess = childProcess.fork(path.join(import.meta.dirname, '../youtubeWorker.js'), [], options)
 
     youtubeProcess.on('exit', (code, signal) => {
       log.info(`YouTube processor exited (${signal || code})`)

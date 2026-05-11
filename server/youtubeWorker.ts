@@ -1,6 +1,7 @@
 import { initLogger } from './lib/Log.js'
 import path from 'path'
-import env from './lib/cli.js'
+
+const env = JSON.parse(process.env.KES_ENV_JSON!)
 
 const log = initLogger('youtube', {
   console: { level: 4 },

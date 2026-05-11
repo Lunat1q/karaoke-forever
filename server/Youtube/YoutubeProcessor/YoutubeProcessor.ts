@@ -1,4 +1,5 @@
 import fs from 'fs'
+import { execFile } from 'child_process'
 import { rimraf } from 'rimraf'
 import youtubedl from 'youtube-dl-exec'
 import axios from 'axios'
@@ -314,9 +315,81 @@ class YoutubeProcessor extends Youtube {
     const alignedPath = outputDir + '/aligned.txt'
     fs.writeFileSync(lyricsPath, video.lyrics!)
 
-    await shell.promisifiedExec(
-      'whisper-align "' + outputDir + '/audio.mp3" "' + lyricsPath + '" "' + alignedPath + '" small'
-    )
+    const pythonCode = `
+import sys, json, os, stable_whisper
+
+audio_path, lyrics_path, output_path, model_size = sys.argv[1], sys.argv[2], sys.argv[3], sys.argv[4] if len(sys.argv) > 4 else "small"
+
+with open(lyrics_path, "r", encoding="utf-8") as f:
+    lyrics_text = f.read().strip()
+
+if not lyrics_text:
+    print("ERROR: lyrics file is empty", file=sys.stderr)
+    sys.exit(1)
+
+original_lines = [l.strip() for l in lyrics_text.splitlines() if l.strip()]
+
+cache_dir = os.environ.get("WHISPER_CACHE_DIR", "/data/whisper-models")
+os.makedirs(cache_dir, exist_ok=True)
+
+model = stable_whisper.load_faster_whisper(model_size, download_root=cache_dir)
+
+has_cyrillic = any("\\u0400" <= c <= "\\u04FF" for c in lyrics_text)
+lang = "ru" if has_cyrillic else "en"
+result = model.align(audio_path, lyrics_text, language=lang)
+
+all_words = []
+for seg in result.segments:
+    for w in seg.words:
+        t = w.word.strip()
+        if t:
+            all_words.append({"word": t, "start": round(w.start, 2), "end": round(w.end, 2), "ignore": False})
+
+aligned = []
+idx = 0
+for line_text in original_lines:
+    line_aligned = []
+    for _ in line_text.split():
+        if idx < len(all_words):
+            line_aligned.append(all_words[idx])
+            idx += 1
+    if line_aligned:
+        aligned.append(line_aligned)
+
+if idx < len(all_words):
+    aligned.append(all_words[idx:])
+
+for line in aligned:
+    for i, w in enumerate(line):
+        if w["end"] - w["start"] < 0.01:
+            prev_end = line[i - 1]["end"] if i > 0 else w["start"]
+            next_start = line[i + 1]["start"] if i + 1 < len(line) else w["start"] + 0.3
+            gap = next_start - prev_end
+            if gap > 0.05:
+                w["start"] = prev_end
+                w["end"] = prev_end + min(gap, 0.3)
+            else:
+                w["end"] = w["start"] + 0.2
+
+with open(output_path, "w", encoding="utf-8") as f:
+    json.dump(aligned, f, ensure_ascii=False)
+
+print(f"Done: {sum(len(l) for l in aligned)} words in {len(aligned)} lines")
+`
+
+    await new Promise<void>((resolve, reject) => {
+      const proc = execFile(
+        '/opt/spleeter-venv/bin/python3',
+        ['-c', pythonCode, outputDir + '/audio.mp3', lyricsPath, alignedPath, 'small'],
+        { timeout: 900000 },
+        (error, stdout, stderr) => {
+          if (stdout) log.info(stdout.trim())
+          if (stderr) log.verbose(stderr.trim())
+          if (error) return reject(error)
+          resolve()
+        }
+      )
+    })
 
     if (!fs.existsSync(alignedPath) || fs.statSync(alignedPath).size < 100) {
       throw new Error('Whisper alignment failed for video #' + video.id)

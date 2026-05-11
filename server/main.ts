@@ -5,6 +5,7 @@ import env from './lib/cli.js'
 import path from 'path'
 import { initLogger } from './lib/Log.js'
 import { parsePathIds } from './lib/util.js'
+import { bootstrap } from './bootstrap.js'
 import {
   PREFS_PATHS_CHANGED,
   REQUEST_SCAN,
@@ -69,6 +70,9 @@ process.on('unhandledRejection', (reason) => {
   log.error('Unhandled Rejection:', reason)
 })
 
+// run bootstrap tasks (spleeter model, DB migration fixes)
+bootstrap(env)
+
 ;(async function () {
   // init database
   const { open, close } = await import('./lib/Database.js')
@@ -104,6 +108,16 @@ process.on('unhandledRejection', (reason) => {
   if (paths.result.find(pathId => paths.entities[pathId].prefs?.isWatchingEnabled)) {
     startWatcher(paths)
   }
+
+  // start YouTube media sync loop (every 2 minutes)
+  const mediaDir = '/media/YouTube Karaoke'
+  const { startSyncLoop, stopSyncLoop } = await import('./Youtube/YouTubeSync.js')
+  startSyncLoop(
+    path.join(env.KES_PATH_DATA, 'database.sqlite3'),
+    mediaDir,
+    path.resolve('tmp')
+  )
+  shutdownHandlers.push(async () => stopSyncLoop())
 })()
 
 function startWatcher (paths) {
