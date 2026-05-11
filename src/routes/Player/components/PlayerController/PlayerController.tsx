@@ -175,6 +175,7 @@ const PlayerController = (props: PlayerControllerProps) => {
         youtubeVideoStatus={(queueItem as any)?.youtubeVideoStatus}
         youtubeVideoTitle={(queueItem as any)?.youtubeVideoTitle}
         youtubeVideoArtist={(queueItem as any)?.youtubeVideoArtist}
+        youtubeAlignedLyrics={(queueItem as any)?.youtubeAlignedLyrics}
         upcomingLyricsColor={(prefs as any).upcomingLyricsColor}
         playedLyricsColor={(prefs as any).playedLyricsColor}
         tmpOutputPath={(prefs as any).tmpOutputPath}
