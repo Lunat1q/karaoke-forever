@@ -19,7 +19,7 @@ interface YouTubeItemProps {
   onVideoTap?: (video: YouTubeVideo) => void
 }
 
-const YOUTUBE_ITEM_HEIGHT = 70
+export const YOUTUBE_ITEM_HEIGHT = 70
 
 const YouTubeItem = ({ video, style, onVideoTap }: YouTubeItemProps) => (
   <div onClick={() => onVideoTap?.(video)} style={style}

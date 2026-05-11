@@ -116,7 +116,8 @@ class Player extends React.Component<PlayerProps> {
   }
 
   render () {
-    if (!this.props.isVisible || typeof this.props.mediaId !== 'number') return null
+    if (!this.props.isVisible) return null
+    if (this.props.mediaType !== 'youtube' && typeof this.props.mediaId !== 'number') return null
 
     let PlayerComponent
 

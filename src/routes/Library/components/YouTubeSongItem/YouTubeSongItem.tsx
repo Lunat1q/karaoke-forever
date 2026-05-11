@@ -14,7 +14,7 @@ interface YouTubeSongItemProps {
   onSongTap?: (song: YouTubeSong) => void
 }
 
-const ITEM_HEIGHT = 70
+export const ITEM_HEIGHT = 70
 
 const YouTubeSongItem = ({ song, style, onSongTap }: YouTubeSongItemProps) => (
   <div onClick={() => onSongTap?.(song)} style={style} className={styles.container}>
