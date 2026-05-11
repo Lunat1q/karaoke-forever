@@ -1,10 +1,12 @@
-baseURL: /
+baseURL: https://www.karaoke-eternal.com/
 languageCode: en-us
-title: Karaoke Forever
+title: Karaoke Eternal
 permalinks:
   page: "/:slug/"
-pygmentsStyle: solarized-dark256
 markup:
+  highlight:
+    style: github-dark
   goldmark:
     renderer:
       unsafe: true
+disableKinds: ["taxonomy", "RSS"]

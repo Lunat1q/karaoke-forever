@@ -1,19 +1,79 @@
-## TBD
+## v2.0.2 (2026-02-14)
+
+- **(App)** Star counts are now shown in the Queue view
+- **(App)** Fixed incorrect room password on sign-in (thanks [@omarcruzpantoja](https://github.com/omarcruzpantoja))
+- **(App)** Fixed potential duplicate rooms during initial setup (thanks **mjmeans**)
+- **(Server)** Now uses Node.js's built-in SQLite, improving performance and cross-arch compatibility
+- **(Server)** Now uses Node.js's built-in argon2 for password hashing; passwords will be migrated from bcrypt on sign-in
+
+## v2.0.1 (2026-01-10)
+
+- Obligatory bug fixes and performance improvements
+
+## v2.0.0 (2025-12-26)
+
+**Sponsored by**: [candre23](https://github.com/candre23), [nellisdev](https://github.com/nellisdev), [astrobyte](https://github.com/astrobyte), [jfeldhamer](https://github.com/jfeldhamer), [cubandaddy](https://github.com/cubandaddy), [Backroads4Me](https://github.com/Backroads4Me) and other private sponsors. Thank you! If you have fun with it, please consider [sponsoring](https://www.karaoke-eternal.com/sponsor).
+
+### Guest accounts and QR codes
+
+Joining the party is now faster and easier. The player supports QR codes that link directly to a room, where singers can now (finally!) join as guests. Admins can also choose whether a room allows guests and/or new standard users, or only existing users.
+
+### Videos + visualizer
+
+Visualizations are now supported with video files. By automatically detecting a video's background color and making it transparent, visualizer effects can be displayed behind the lyrics. This works best on videos with solid color backgrounds, and can be enabled by selecting "Allow video background keying" in the media folder's preferences.
+
+### Improved queue management
+
+Enhancements to the queue include:
+
+- The queue can be restarted from any previously played song, or the beginning of the current song
+- All upcoming songs for a user can be removed at once by long-pressing the *Remove* or *Skip* buttons
+- When a standard user or guest signs out, their upcoming songs are now automatically removed from the queue
+
+### Metadata parser changes
+
+Previously, the metadata parser (which uses filenames or tags to determine artist names and song titles) could be customized via `_kes.v1.js` files which were essentially arbitrary JavaScript. They were run in a sandbox to limit their functionality, but that sandbox was deprecated, and the overall approach was complex.
+
+In v2, the parser instead uses `_kes.v2.json` files. These JSON files allow the same basic configuration, in addition to simple string replacement and "templating" of artist names and song titles. See the docs for more information. As always, the best approach is to properly name/tag media, but customizing the parser can help in specific cases.
+
+### Other features and fixes
+
+- **(Server)** Zipped MP3+G media is now supported
+- **(Server)** Media folders can now be watched for changes, as well as manually scanned individually
+- **(Server)** Fixed an error when listing drives on Windows due to removal of `wmic` (thanks Microsoft! /s)
+- **(Server)** Usernames/emails are no longer case sensitive (thanks **gazugafan**)
+- **(Library)** Songs that have already been played in the current session appear greyed
+- **(Library)** Tapping a song that is already upcoming no longer queues it again
+- **(Player)** Fixed incorrect calculation of ReplayGain values (thanks **laberning**)
+- **(General)** Prevent auto-translation of some UI elements (thanks **laberning**)
+
+This release includes contributions from [gazugafan](https://github.com/gazugafan), [gausie](https://github.com/gausie), [EffakT](https://github.com/EffakT) and [laberning](https://github.com/laberning), as well as testing by **mjmeans**. Thanks!
+
+## v1.0.0 (2022-05-17)
+
+Sponsored by: [consolecwby](https://github.com/consolecwby), [vze22jjw](https://github.com/vze22jjw). Thank you! If you have fun with it, please consider [sponsoring](https://www.karaoke-eternal.com/sponsor).
 
 ### New
-- **(app)** User management interface!
-- **(app)** CD+Graphics backgrounds are now content-aware for better visuals and readability
-- **(app)** Media folders can now be prioritized via drag-and-drop
-- **(app)** Summary is now shown following a media scan
+
+- **Name**: Karaoke Forever is now Karaoke Eternal
+- **(app)** User management interface
+- **(app)** "Make user's next" button for upcoming songs
+- **(app)** "Re-queue" button for played songs
+- **(app)** Content-aware CD+Graphics backgrounds
+- **(app)** Media folders can be prioritized via drag-and-drop
 - **(app)** Added ~370 visualizer presets (now 472 total)
-- **(server)** Support for custom URL base path (see `--urlPath` CLI option)
-- **(server)** Reduced load and improved client connection speed via library caching
+- **(app)** Summary is shown following a media scan
+- **(server)** Custom URL path (subfolder) support (see `--urlPath` CLI option)
+- **(server)** Custom database file path support (see `--data` CLI option)
+- **(server)** Session key can be rotated on startup (see `--rotateKey` CLI option)
+- **(server)** All CLI options now have equivalent environment variables
 
 ### Changed
 
-- **(app)** **(breaking)** Browsers without the [ResizeObserver API](https://caniuse.com/#feat=mdn-api_resizeobserver) are no longer supported
+- **(app)** Next-up singer's place is now reserved and won't be pre-empted
 - **(server)** Uses one less process/helper
 - **(server)** Media scanner performance is greatly improved when adding media
+- **(server)** Improved client connection speed via library caching
 - **(server)** Media scanner process is restricted to read-only database access
 - **(server)** Fixed potential error when a non-admin user tries to remove one of their queued songs
 - **(server)** Fixed potential SQLITE_BUSY errors while scanning media
@@ -26,13 +86,11 @@
 
 ### Sponsors
 
-Massive thanks to this release's sponsors: [fulldecent](https://github.com/fulldecent), [vze22jjw](https://github.com/vze22jjw)
-
-If you have fun with it, consider [sponsoring](https://github.com/sponsors/bhj) as we roll down [the road to v1.0](https://github.com/bhj/karaoke-forever/issues/13).
+Massive thanks to this release's sponsors: [fulldecent](https://github.com/fulldecent), [vze22jjw](https://github.com/vze22jjw). If you have fun with it, please consider [sponsoring](https://www.karaoke-eternal.com/sponsor).
 
 ### New
 
-- **(app)** [ReplayGain support](http://www.karaoke-forever.com/docs/#preferences-admin-only). No more scrambling for the volume when a new song starts! With properly tagged media, the player can automatically minimize volume differences between songs.
+- **(app)** [ReplayGain support](http://www.karaoke-eternal.com/docs/#preferences-admin-only). No more scrambling for the volume when a new song starts! With properly tagged media, the player can automatically minimize volume differences between songs.
 - **(app)** Rooms can now be password-protected
 - **(player)** CD+Graphics now have shadows, can be resized, and use less CPU
 - **(player)** **(breaking)** Web Audio API support is now required (only for browsers running the player)
@@ -51,7 +109,7 @@ If you have fun with it, consider [sponsoring](https://github.com/sponsors/bhj) 
 
 ## v0.7.4 (2019-12-30)
 
-- Initial release on [npm](https://www.npmjs.com/package/karaoke-forever)
+- Initial release on [npm](https://www.npmjs.com/package/karaoke-eternal)
 - **(app)** Improved sign in/first run form
 - **(app)** Added About panel with version and licenses
 - **(app)** General style improvements

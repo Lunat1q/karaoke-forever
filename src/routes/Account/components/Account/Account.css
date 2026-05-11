@@ -1,33 +1,10 @@
-.container {
-  background-color: var(--panel-bg-color);
-  border-radius: var(--border-radius);
-  margin: 10px 0;
-  overflow: hidden;
-
-  /* fixes panel disappearing in iOS 11 due to overflow: scroll on parent
-  container and -webkit-overflow-scrolling: touch on parent */
-  -webkit-transform: translate3d(0, 0, 0);
-}
-
-.title {
-  margin: 0;
-  font: var(--panel-title-font);
-  padding: var(--panel-title-padding);
-  background-color: var(--panel-title-bg-color);
-}
-
-.content {
-  padding: var(--container-padding);
-}
-
 .content p {
-  margin-top: 10px;
+  margin-top: var(--space-s);
 }
 
-.signOut {
-  margin-top: var(--input-margin);
-}
-
-.updateAccount {
-  margin-top: var(--input-margin);
+.btnContainer {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-s);
+  margin-top: var(--space-s);
 }

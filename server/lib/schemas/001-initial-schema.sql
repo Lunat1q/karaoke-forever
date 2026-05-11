@@ -9,7 +9,7 @@ CREATE UNIQUE INDEX IF NOT EXISTS idxNameNorm ON "artists" ("nameNorm" ASC);
 
 CREATE TABLE IF NOT EXISTS "media" (
   mediaId integer PRIMARY KEY AUTOINCREMENT NOT NULL,
-  songId integer NOT NULL,
+  songId integer NOT NULL REFERENCES songs(songId) DEFERRABLE INITIALLY DEFERRED,
   pathId integer NOT NULL,
   relPath text NOT NULL,
   duration integer NOT NULL,
@@ -35,9 +35,9 @@ INSERT INTO prefs (key,data) VALUES ('isFirstRun','true');
 
 CREATE TABLE IF NOT EXISTS "queue" (
   "queueId" integer PRIMARY KEY AUTOINCREMENT NOT NULL,
-  "roomId" integer NOT NULL,
+  "roomId" integer NOT NULL REFERENCES rooms(roomId) DEFERRABLE INITIALLY DEFERRED,
   "songId" integer NOT NULL,
-  "userId" integer NOT NULL
+  "userId" integer NOT NULL REFERENCES users(userId) DEFERRABLE INITIALLY DEFERRED
 );
 
 CREATE INDEX IF NOT EXISTS idxRoom ON "queue" ("roomId" ASC);
@@ -47,12 +47,12 @@ CREATE TABLE IF NOT EXISTS "rooms" (
   "name" text NOT NULL,
   "status" text NOT NULL,
   "password" text,
-  "dateCreated" text NOT NULL
+  "dateCreated" integer NOT NULL DEFAULT(0)
 );
 
 CREATE TABLE IF NOT EXISTS "songs" (
   "songId" integer PRIMARY KEY AUTOINCREMENT NOT NULL,
-  "artistId" integer NOT NULL,
+  "artistId" integer NOT NULL REFERENCES artists(artistId) DEFERRABLE INITIALLY DEFERRED,
   "title" text NOT NULL COLLATE NOCASE,
   "titleNorm" text NOT NULL COLLATE NOCASE
 );
@@ -60,14 +60,14 @@ CREATE TABLE IF NOT EXISTS "songs" (
 CREATE INDEX IF NOT EXISTS idxTitleNorm ON "songs" ("titleNorm" ASC);
 
 CREATE TABLE IF NOT EXISTS "artistStars" (
-  "userId" integer NOT NULL,
+  "userId" integer NOT NULL REFERENCES users(userId) DEFERRABLE INITIALLY DEFERRED,
   "artistId" integer NOT NULL
 );
 
 CREATE UNIQUE INDEX IF NOT EXISTS idxUserArtist ON "artistStars" ("userId" ASC, "artistId" ASC);
 
 CREATE TABLE IF NOT EXISTS "songStars" (
-  "userId" integer NOT NULL,
+  "userId" integer NOT NULL REFERENCES users(userId) DEFERRABLE INITIALLY DEFERRED,
   "songId" integer NOT NULL
 );
 
