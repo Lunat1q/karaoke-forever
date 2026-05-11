@@ -9,7 +9,7 @@ CREATE UNIQUE INDEX IF NOT EXISTS idxName ON "roles" ("name" ASC);
 
 INSERT INTO roles (name) VALUES ('admin'), ('player'), ('standard'), ('guest');
 
-ALTER TABLE users ADD COLUMN "roleId" integer NOT NULL DEFAULT 0 REFERENCES roles(roleId) DEFERRABLE INITIALLY DEFERRED;
+ALTER TABLE users ADD COLUMN "roleId" integer NOT NULL DEFAULT 0;
 
 UPDATE users SET roleId = CASE
     WHEN isAdmin = 1 THEN (SELECT roleId FROM roles WHERE name = 'admin')

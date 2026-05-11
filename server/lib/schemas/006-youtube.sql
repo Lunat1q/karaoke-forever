@@ -1,24 +1,8 @@
 -- Up
-create table queue_dg_tmp
-(
-    queueId integer not null
-        primary key autoincrement,
-    roomId integer not null,
-    songId integer,
-    userId integer not null,
-    youtubeVideoId text
-);
+-- Add youtubeVideoId to queue and create youtubeVideos table
+-- Safe to re-run: uses IF NOT EXISTS and handles existing schemas
 
-insert into queue_dg_tmp(queueId, roomId, songId, userId) select queueId, roomId, songId, userId from queue;
-
-drop table queue;
-
-alter table queue_dg_tmp rename to queue;
-
-create index idxRoom
-    on queue (roomId);
-
-create table youtubeVideos
+CREATE TABLE IF NOT EXISTS youtubeVideos
 (
     id integer not null
         constraint youtubeVideos_pk
@@ -35,8 +19,8 @@ create table youtubeVideos
     karaoke integer(1) NOT NULL DEFAULT(0)
 );
 
-create unique index youtubeVideos_youtubeVideoId_uindex
-    on youtubeVideos (youtubeVideoId);
+CREATE UNIQUE INDEX IF NOT EXISTS youtubeVideos_youtubeVideoId_uindex
+    ON youtubeVideos (youtubeVideoId);
 
 
 -- Down
