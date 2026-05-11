@@ -30,7 +30,7 @@ router.get('/song/:songId', async (ctx) => {
 // searches YouTube for videos
 router.post('/youtubesearch', async (ctx) => {
   const prefs = Prefs.get() as any
-  const searchQuery = (ctx.request as any).body as string
+  const searchQuery = ((ctx.request as any).body as any).query as string
 
   const containsKaraoke = searchQuery.toLowerCase().includes('karaoke')
   const queries: string[] = []

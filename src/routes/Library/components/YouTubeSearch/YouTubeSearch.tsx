@@ -44,7 +44,7 @@ const YouTubeSearch = ({ filterKeywords, ui, onDone }: YouTubeSearchProps) => {
     setLoading(true)
     setError(false)
     api.post('youtubesearch', {
-      body: filterKeywords.join(' ')
+      body: { query: filterKeywords.join(' ') }
     })
       .then((result) => {
         setVideos(result as unknown as YouTubeVideo[])
