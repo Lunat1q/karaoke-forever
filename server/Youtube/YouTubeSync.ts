@@ -11,11 +11,13 @@
  */
 import fs from 'fs'
 import path from 'path'
-import { execFileSync } from 'child_process'
+import { execFile } from 'child_process'
+import { promisify } from 'util'
 import { DatabaseSync } from 'node:sqlite'
 import getLogger from '../lib/Log.js'
 
 const log = getLogger('YouTubeSync')
+const execFileAsync = promisify(execFile)
 
 const WHISPER_MODEL = process.env.WHISPER_MODEL || 'medium'
 
@@ -152,18 +154,18 @@ with open(output_path, "w", encoding="utf-8") as f:
 print(f"Done: {sum(len(l) for l in aligned)} words in {len(aligned)} lines")
 `
 
-function runWhisperAlign (audioPath: string, lyricsText: string, srcDir: string): void {
+async function runWhisperAlign (audioPath: string, lyricsText: string, srcDir: string): Promise<void> {
   const lyricsPath = path.join(srcDir, 'lyrics_input.txt')
   const outputPath = path.join(srcDir, 'whisper_aligned.txt')
 
   fs.writeFileSync(lyricsPath, lyricsText)
 
-  execFileSync('/opt/spleeter-venv/bin/python3', [
+  await execFileAsync('/opt/spleeter-venv/bin/python3', [
     '-c', WHISPER_PYTHON_CODE, audioPath, lyricsPath, outputPath, WHISPER_MODEL
   ], { timeout: 900000 })
 }
 
-export function syncYouTubeToLibrary (dbPath: string, mediaDir: string, tmpDir: string) {
+export async function syncYouTubeToLibrary (dbPath: string, mediaDir: string, tmpDir: string) {
   const db = new DatabaseSync(dbPath, { open: true })
 
   let videos: ReadyVideo[]
@@ -201,7 +203,7 @@ export function syncYouTubeToLibrary (dbPath: string, mediaDir: string, tmpDir: 
     if (video.lyrics && hasNonLatinChars(video.lyrics) && !fs.existsSync(whisperLyrics) && fs.existsSync(srcAudio)) {
       try {
         log.info('WHISPER ALIGN: ' + video.artist + ' - ' + video.title)
-        runWhisperAlign(srcAudio, video.lyrics, srcDir)
+        await runWhisperAlign(srcAudio, video.lyrics, srcDir)
         log.info('WHISPER DONE: ' + video.youtubeVideoId)
 
         // Replace aligned.txt so the queue player also uses Whisper alignment
@@ -231,7 +233,7 @@ export function syncYouTubeToLibrary (dbPath: string, mediaDir: string, tmpDir: 
         fs.writeFileSync(assPath, assContent)
 
         log.info('BURNING LYRICS: ' + filename)
-        execFileSync('ffmpeg', [
+        await execFileAsync('ffmpeg', [
           '-y', '-nostdin', '-i', srcVideo,
           '-vf', 'ass=' + assPath,
           '-c:v', 'libx264', '-preset', 'fast', '-crf', '23',
@@ -262,31 +264,41 @@ export function syncYouTubeToLibrary (dbPath: string, mediaDir: string, tmpDir: 
   log.info('Sync done: ' + created + ' created, ' + skipped + ' skipped, ' + videos.length + ' total ready')
 }
 
-let syncTimer: ReturnType<typeof setInterval> | null = null
+let syncTimer: ReturnType<typeof setTimeout> | null = null
+let syncRunning = false
 
 /**
  * Start a periodic sync loop (every 2 minutes).
+ * Uses setTimeout chaining to prevent overlapping runs.
  */
 export function startSyncLoop (dbPath: string, mediaDir: string, tmpDir: string) {
-  if (syncTimer) return
+  if (syncRunning) return
+  syncRunning = true
 
   log.info('Starting YouTube sync loop (every 2 minutes)')
 
-  syncTimer = setInterval(() => {
-    try {
-      syncYouTubeToLibrary(dbPath, mediaDir, tmpDir)
-    } catch (err: any) {
-      log.error('Sync error: ' + err.message)
-    }
-  }, 120_000)
+  const scheduleNext = () => {
+    if (!syncRunning) return
+    syncTimer = setTimeout(async () => {
+      try {
+        await syncYouTubeToLibrary(dbPath, mediaDir, tmpDir)
+      } catch (err: any) {
+        log.error('Sync error: ' + err.message)
+      }
+      scheduleNext()
+    }, 120_000)
+  }
+
+  scheduleNext()
 }
 
 /**
  * Stop the periodic sync loop.
  */
 export function stopSyncLoop () {
+  syncRunning = false
   if (syncTimer) {
-    clearInterval(syncTimer)
+    clearTimeout(syncTimer)
     syncTimer = null
   }
 }
