@@ -102,7 +102,7 @@ const YouTubeSearch = ({ filterKeywords, ui, onDone }: YouTubeSearchProps) => {
       <div className={styles.container} style={containerStyle}>
         <div>We had a problem searching YouTube :(</div>
         <div style={{ paddingTop: 30 }}>
-          <button onClick={retry} className={`${styles.btn} primary`}>Try Again</button>
+          <button onClick={retry} className={styles.btn}>Try Again</button>
         </div>
       </div>
     )

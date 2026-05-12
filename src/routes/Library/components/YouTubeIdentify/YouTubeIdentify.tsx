@@ -164,7 +164,7 @@ const YouTubeIdentify = ({ query, video, ui, onQueued, onCancel }: YouTubeIdenti
       <div className={styles.container} style={containerStyle}>
         <div className={styles.error}>The server had a hickup :(</div>
         <label className={styles.label}>
-          <button onClick={retry} className={`${styles.btn} primary`}>Try Again</button>
+          <button onClick={retry} className={styles.btn}>Try Again</button>
         </label>
       </div>
     )
@@ -178,7 +178,7 @@ const YouTubeIdentify = ({ query, video, ui, onQueued, onCancel }: YouTubeIdenti
           {!video.karaoke && <><strong>&quot;{title}&quot;</strong> by <strong>{artist}</strong> has been added! Feel free to add more songs while our robots generate a karaoke mix 🤖</>}
         </div>
         <label className={styles.label}>
-          <button onClick={onQueued} className={`${styles.btn} primary`}>Nice!</button>
+          <button onClick={onQueued} className={styles.btn}>Nice!</button>
         </label>
       </div>
     )
@@ -203,7 +203,7 @@ const YouTubeIdentify = ({ query, video, ui, onQueued, onCancel }: YouTubeIdenti
           <textarea style={{ height: ui.innerHeight - 550, minHeight: 50 }} className={styles.input} placeholder='Paste lyrics here' value={lyrics} onChange={(e) => setLyrics(e.target.value)} />
         </label>
         <label className={styles.label}>
-          <button onClick={useLyrics} className={`${styles.btn} primary`}>
+          <button onClick={useLyrics} className={styles.btn}>
             {lyrics ? 'Use These Lyrics' : "I'm good without any lyrics"}
           </button>
         </label>
@@ -227,10 +227,10 @@ const YouTubeIdentify = ({ query, video, ui, onQueued, onCancel }: YouTubeIdenti
           <input type='text' className={styles.input} placeholder='Song Title' value={title} onChange={(e) => setTitle(e.target.value)} />
         </label>
         <label className={styles.label} style={{ paddingTop: 15 }}>
-          <button onClick={useLyrics} className={`${styles.btn} primary`}>Add This Song!</button>
+          <button onClick={useLyrics} className={styles.btn}>Add This Song!</button>
         </label>
         <label className={styles.label} style={{ paddingTop: 5 }}>
-          <button onClick={onCancel} className={`${styles.btnLink} primary`}>Back to Search Results</button>
+          <button onClick={onCancel} className={styles.btnLink}>Back to Search Results</button>
         </label>
       </div>
     )
@@ -251,13 +251,13 @@ const YouTubeIdentify = ({ query, video, ui, onQueued, onCancel }: YouTubeIdenti
           <input type='text' className={styles.input} placeholder='Song Title' value={title} onChange={(e) => setTitle(e.target.value)} />
         </label>
         <label className={styles.label} style={{ paddingTop: 15 }}>
-          <button onClick={retry} className={`${styles.btn} primary`}>Try Again</button>
+          <button onClick={retry} className={styles.btn}>Try Again</button>
         </label>
         <label className={styles.label} style={{ paddingTop: 5 }}>
-          <button onClick={enterManually} className={`${styles.btnLink} primary`}>Let me enter lyrics myself</button>
+          <button onClick={enterManually} className={styles.btnLink}>Let me enter lyrics myself</button>
         </label>
         <label className={styles.label} style={{ paddingTop: 5 }}>
-          <button onClick={onCancel} className={`${styles.btnLink} primary`}>Back to Search Results</button>
+          <button onClick={onCancel} className={styles.btnLink}>Back to Search Results</button>
         </label>
       </div>
     )
@@ -276,10 +276,10 @@ const YouTubeIdentify = ({ query, video, ui, onQueued, onCancel }: YouTubeIdenti
             </pre>
           </label>
           <label className={styles.label} style={{ paddingTop: 15 }}>
-            <button onClick={useLyrics} className={`${styles.btn} primary`}>That&apos;s it!</button>
+            <button onClick={useLyrics} className={styles.btn}>That&apos;s it!</button>
           </label>
           <label className={styles.label} style={{ paddingTop: 5 }}>
-            <button onClick={enterArtistAndTitle} className={`${styles.btnLink} primary`}>No, that doesn&apos;t look right</button>
+            <button onClick={enterArtistAndTitle} className={styles.btnLink}>No, that doesn&apos;t look right</button>
           </label>
         </div>
       )
@@ -295,12 +295,12 @@ const YouTubeIdentify = ({ query, video, ui, onQueued, onCancel }: YouTubeIdenti
           <textarea style={{ height: ui.innerHeight - 500, minHeight: 50 }} className={styles.input} placeholder='Paste lyrics here' value={lyrics} onChange={(e) => setLyrics(e.target.value)} />
         </label>
         <label className={styles.label}>
-          <button onClick={useLyrics} className={`${styles.btn} primary`}>
+          <button onClick={useLyrics} className={styles.btn}>
             {lyrics ? 'Use These Lyrics' : "I'm good without any lyrics"}
           </button>
         </label>
         <label className={styles.label} style={{ paddingTop: 5 }}>
-          <button onClick={enterArtistAndTitle} className={`${styles.btnLink} primary`}>Try a different artist/title</button>
+          <button onClick={enterArtistAndTitle} className={styles.btnLink}>Try a different artist/title</button>
         </label>
       </div>
     )
@@ -324,7 +324,7 @@ const YouTubeIdentify = ({ query, video, ui, onQueued, onCancel }: YouTubeIdenti
         height={ui.innerHeight - 300}
       />
       <label className={styles.label} style={{ paddingTop: 15 }}>
-        <button onClick={enterArtistAndTitle} className={`${styles.btnLink} primary`}>None of these look right</button>
+        <button onClick={enterArtistAndTitle} className={styles.btnLink}>None of these look right</button>
       </label>
     </div>
   )
