@@ -35,6 +35,75 @@ Microphones are *not* required since the player itself only outputs music - this
 
 There are several [installation methods](https://www.karaoke-eternal.com/docs/karaoke-eternal-server/#installation) available for Karaoke Eternal Server.
 
+### Docker (with YouTube & Karaoke Generation)
+
+This fork includes Docker support with integrated YouTube search, Spleeter vocal isolation, Whisper lyrics alignment, and AutoLyrixAlign.
+
+#### Prerequisites
+
+- Docker and Docker Compose
+- ~15 GB disk space for AutoLyrixAlign data (downloaded on first run)
+- ~200 MB for Spleeter 2stems model (downloaded on first start)
+
+#### 1. Configure Volumes
+
+Edit `docker-compose.yml` and adjust the volume paths to match your system:
+
+```yaml
+volumes:
+  - /path/to/data:/data                  # Database and app data
+  - /path/to/media:/media                # Your media library (MP3+G, MP4, etc.)
+  - /path/to/youtube-tmp:/app/tmp        # Temp storage for YouTube downloads & processing
+```
+
+For the AutoLyrixAlign service:
+```yaml
+volumes:
+  - /path/to/autolyrixalign-data:/app/NUSAutoLyrixAlign  # ~13 GB alignment models
+```
+
+#### 2. Build and Start
+
+```bash
+docker compose up -d --build
+```
+
+This builds two containers:
+- **karaoke-4ever** — the main Karaoke Eternal app (port `9988`)
+- **autolyrixalign** — the AutoLyrixAlign lyrics alignment service (port `3001`)
+
+#### 3. Initial Setup
+
+1. Open `http://<your-host>:9988` in a browser
+2. Create your admin account (first user is automatically admin)
+3. Go to **Account** and add your media folder path (`/media`)
+
+#### 4. Enable YouTube & Karaoke Generation
+
+In the **Account** page (admin only):
+
+1. Check **Enable YouTube search** — lets users search and queue YouTube videos
+2. Check **Automatically create karaoke mixes** — enables Spleeter + lyrics alignment
+3. Set **Spleeter path** to `spleeter` (default, already on PATH in the container)
+4. Set **AutoLyrixAlign Service Host** to `autolyrixalign:3000` (the Docker service name)
+5. Use the **Test** buttons to verify both services are working
+
+#### 5. Port Configuration
+
+| Service | Container Port | Default Host Port |
+|---------|---------------|-------------------|
+| Karaoke Eternal | 3000 | 9988 |
+| AutoLyrixAlign | 3000 | 3001 |
+
+Edit the `ports` section in `docker-compose.yml` to change host ports.
+
+#### Notes
+
+- The AutoLyrixAlign container runs in **privileged mode** (required by Singularity)
+- On first run, AutoLyrixAlign will download ~13 GB of alignment data — this is persisted in the volume
+- The Spleeter 2stems model (~200 MB) is automatically downloaded on first startup
+- YouTube processing uses Whisper (via stable-ts + faster-whisper) for non-Latin lyrics alignment and falls back to AutoLyrixAlign for English
+
 ## Discord & Support
 
 Join the [Karaoke Eternal Discord Server](https://discord.gg/PgqVtFq) for general support and development chat, or just to say hi!
