@@ -1,0 +1,48 @@
+# AutoLyrixAlign Service
+# Requires privileged mode for Singularity
+FROM node:16-bullseye
+
+# Install system dependencies for Singularity and build tools
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    build-essential \
+    libarchive-dev \
+    squashfs-tools \
+    git \
+    wget \
+    python3 \
+    python-is-python3 \
+    autoconf \
+    automake \
+    libtool \
+    pkg-config \
+    && rm -rf /var/lib/apt/lists/*
+
+# Download, patch, and install Singularity 2.5.2
+RUN cd /tmp && \
+    wget -q https://github.com/singularityware/singularity/releases/download/2.5.2/singularity-2.5.2.tar.gz && \
+    tar xzf singularity-2.5.2.tar.gz && \
+    cd singularity-2.5.2 && \
+    # Apply mount.c patch for newer kernels
+    sed -i 's/if ( singularity_mount.*$/if ( singularity_mount(loop_dev, mount_point, "squashfs", MS_NOSUID|MS_RDONLY|MS_NODEV, NULL) < 0 ) {/' src/lib/image/squashfs/mount.c && \
+    ./configure --prefix=/usr/local && \
+    make -j$(nproc) && \
+    make install && \
+    cd / && rm -rf /tmp/singularity*
+
+WORKDIR /app
+
+# Clone AutoLyrixAlignService
+RUN git clone --depth 1 https://github.com/gazugafan/AutoLyrixAlignService.git .
+
+# Install JS dependencies
+RUN npm install
+
+# The NUSAutoLyrixAlign data (~13GB) will be stored in a volume
+# It will be auto-downloaded on first run if not present
+
+EXPOSE 3000
+
+# Skip dependency check since we install singularity ourselves,
+# and the interactive prompts don't work in Docker.
+# The data download must be handled separately (see README).
+CMD ["node", "index.js", "-p", "3000", "-d"]

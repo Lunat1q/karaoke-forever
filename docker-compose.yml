@@ -1,0 +1,34 @@
+services:
+  karaoke-4ever:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: karaoke-4ever
+    restart: unless-stopped
+    ports:
+      - "9988:3000"
+    volumes:
+      - /media_pool/karaoke/data:/data
+      - /media_pool/karaoke/media:/media
+      - /media_pool/karaoke/youtube-tmp:/app/tmp
+    environment:
+      - NODE_ENV=production
+      - KES_PATH_DATA=/data
+    depends_on:
+      - autolyrixalign
+
+  autolyrixalign:
+    build:
+      context: .
+      dockerfile: Dockerfile.autolyrixalign
+    container_name: autolyrixalign
+    restart: unless-stopped
+    ports:
+      - "3001:3000"
+    volumes:
+      - /media_pool/karaoke/autolyrixalign-data:/app/NUSAutoLyrixAlign
+    # Singularity requires privileged mode to run containers
+    privileged: true
+    environment:
+      - NODE_ENV=production
+      - SINGULARITY_BINDPATH=/app
