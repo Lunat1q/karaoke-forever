@@ -39,24 +39,15 @@ const Users = () => {
 
     return (
       <tr key={userId}>
-        {userId === curUserId && (
-          <td translate='no'>
-            <strong>{user.username}</strong>
-            {' '}
-            (
-            {user.name}
-            )
-          </td>
-        )}
-        {userId !== curUserId && (
-          <td>
-            <a data-user-id={userId} onClick={handleOpen}>{user.username}</a>
-            {' '}
-            (
-            {user.name}
-            )
-          </td>
-        )}
+        <td translate='no'>
+          <a data-user-id={userId} onClick={handleOpen}>
+            {userId === curUserId ? <strong>{user.username}</strong> : user.username}
+          </a>
+          {' '}
+          (
+          {user.name}
+          )
+        </td>
         <td>{user.role}</td>
         <td>{formatDateTime(new Date(user.dateCreated * 1000))}</td>
       </tr>
