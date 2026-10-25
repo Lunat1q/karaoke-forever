@@ -2,6 +2,10 @@
 # Requires privileged mode for Singularity
 FROM node:16-bullseye
 
+# Debian 11 (bullseye) is EOL and its packages are moving to archive.debian.org;
+# deb.debian.org now 404s on bullseye-security updates, failing apt-get install.
+RUN sed -i 's#http://deb.debian.org#http://archive.debian.org#g' /etc/apt/sources.list
+
 # Install system dependencies for Singularity and build tools
 RUN apt-get update && apt-get install -y --no-install-recommends \
     build-essential \

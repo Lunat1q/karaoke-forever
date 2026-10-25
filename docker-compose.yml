@@ -6,7 +6,7 @@ services:
     container_name: karaoke-4ever
     restart: unless-stopped
     ports:
-      - "9988:3000"
+      - "127.0.0.1:19988:3000"  # LAN :9988 is a host systemd socket that starts this on demand
     volumes:
       - /media_pool/karaoke/data:/data
       - /media_pool/karaoke/media:/media
@@ -24,7 +24,7 @@ services:
     container_name: autolyrixalign
     restart: unless-stopped
     ports:
-      - "3001:3000"
+      - "127.0.0.1:3001:3000"
     volumes:
       - /media_pool/karaoke/autolyrixalign-data:/app/NUSAutoLyrixAlign
     # Singularity requires privileged mode to run containers

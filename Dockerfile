@@ -17,7 +17,8 @@ RUN python3 -m venv /opt/spleeter-venv && \
     /opt/spleeter-venv/bin/pip install --no-cache-dir faster-whisper && \
     /opt/spleeter-venv/bin/pip install --no-cache-dir stable-ts && \
     /opt/spleeter-venv/bin/pip install --no-cache-dir --force-reinstall \
-      torch==2.5.1+cpu torchaudio==2.5.1+cpu --index-url https://download.pytorch.org/whl/cpu && \
+      torch==2.5.1+cpu torchaudio==2.5.1+cpu --index-url https://download.pytorch.org/whl/cpu \
+      --extra-index-url https://pypi.org/simple && \
     /opt/spleeter-venv/bin/pip install --no-cache-dir "typer<0.4.0"
 
 # Note: spleeter 2stems model is downloaded at runtime by bootstrap.ts
